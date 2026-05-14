@@ -85,6 +85,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 ${product.price.toFixed(2)}
               </span>
               <span className="text-xs text-stone-400 ml-1">USD</span>
+              <span className="text-[10px] text-stone-400 block">IVA incl.</span>
             </div>
             <button
               onClick={handleAddToCart}

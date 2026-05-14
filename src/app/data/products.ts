@@ -8,7 +8,7 @@ export interface Product {
   id: number;
   name: string;
   description: string;
-  price: number; // USD
+  price: number;
   image: string;
   category: Category;
   badge?: string;
@@ -21,48 +21,48 @@ export const products: Product[] = [
   // RAMOS
   {
     id: 1,
-    name: "Ramo Rosas Rosadas",
+    name: "Me Enamoré",
     description:
-      "Rosas rosadas frescas del día. Perfectas para decir 'te quiero' sin palabras. Incluye envoltorio artesanal y lazo de organza.",
-    price: 15.00,
+      "Dile todo el amor que sientes y demuéstralo con un detalle lleno de mucho cariño. Disponible en: 12 rosas rojas $25.00 · 24 rosas rojas $33.00",
+    price: 25.00,
     image: img1,
     category: "ramos",
     badge: "Más vendido",
     rating: 4.9,
     reviews: 128,
-    tags: ["rosas", "romántico", "cumpleaños"],
+    tags: ["rosas rojas", "romántico", "amor"],
   },
   {
     id: 2,
-    name: "Ramo de Girasoles",
+    name: "Tú y Yo",
     description:
-      "Los girasoles siempre traen buen rollo. Pura alegría y luz ecuatoriana, ideales para alegrarle el día a alguien muy especial.",
-    price: 12.00,
+      "Envía un detalle y demuestra tu sinceridad y entrega. Disponible en: 18 rosas rosadas $29.00 · 24 rosas rosadas $33.00",
+    price: 29.00,
     image: img2,
     category: "ramos",
-    badge: "Nueva llegada",
-    rating: 4.7,
-    reviews: 89,
-    tags: ["girasoles", "alegría", "verano"],
+    rating: 4.8,
+    reviews: 95,
+    tags: ["rosas rosadas", "romántico", "aniversario"],
   },
   {
     id: 3,
-    name: "Ramo Primaveral Mixto",
+    name: "Alegre Sorpresa",
     description:
-      "Un mix de flores de temporada súper colorido. Tulipanes, margaritas, rosas... cada ramo es único y sale directo de nuestro jardín.",
-    price: 18.00,
+      "Dile que la extrañas y que estás agradecido. Disponible en: 24 rosas rosadas $36.00 · 36 rosas rosadas $42.00 · 50 rosas rosadas $50.00",
+    price: 36.00,
     image: img3,
     category: "ramos",
+    badge: "Favorita",
     rating: 4.8,
     reviews: 74,
-    tags: ["mixto", "primavera", "colorido"],
+    tags: ["rosas rosadas", "sorpresa", "cumpleaños"],
   },
   {
     id: 4,
-    name: "Ramo Rosas Rojas Pasión",
+    name: "Todo por Amor",
     description:
-      "El clásico que nunca falla. 12 rosas rojas de tallo largo que lo dicen todo. Perfecto para aniversarios y momentos que importan.",
-    price: 22.00,
+      "Manifiesta a esa persona que estás dispuesto a entregarle todo tu amor. Disponible en: 24 rosas rojas $37.00 · 36 rosas rojas $45.00 · 50 rosas rojas $53.00",
+    price: 37.00,
     image: img4,
     category: "ramos",
     badge: "Edición especial",
@@ -70,69 +70,69 @@ export const products: Product[] = [
     reviews: 203,
     tags: ["rosas rojas", "amor", "aniversario"],
   },
-
-  // DETALLES
   {
     id: 5,
-    name: "Arreglo Floral Elegante",
+    name: "Te Amo Más de lo que Piensas",
     description:
-      "Para esos eventos donde todo tiene que ser perfecto. Flores blancas y verdes en un diseño sofisticado que enamora a primera vista.",
-    price: 45.00,
+      "Expresa a la persona especial que es un tesoro. Arreglo en forma de corazón con rosas rojas y girasoles. Disponible en: 12 rosas / 5 girasoles $29.00 · 18 rosas / 5 girasoles $33.00",
+    price: 29.00,
     image: img5,
-    category: "detalles",
-    badge: "Premium",
+    category: "ramos",
+    badge: "Especial",
     rating: 4.9,
     reviews: 56,
-    tags: ["boda", "elegante", "blanco"],
+    tags: ["rosas", "girasoles", "corazón", "romántico"],
   },
   {
     id: 6,
-    name: "Lirios Blancos Delicados",
+    name: "Tú Vales la Pena",
     description:
-      "Lirios blancos que transmiten paz y serenidad. Ideales para momentos donde las palabras sobran y las flores hablan solas.",
-    price: 14.00,
+      "Abre tu corazón y expresa todo lo que te hace sentir. Arreglo en caja con rosas rojas y flores blancas. Disponible en: 12 rosas rojas $25.00 · 18 rosas rojas $29.00",
+    price: 25.00,
     image: img6,
-    category: "detalles",
-    rating: 4.6,
-    reviews: 42,
-    tags: ["lirios", "minimalista", "blanco"],
+    category: "ramos",
+    rating: 4.7,
+    reviews: 88,
+    tags: ["rosas rojas", "caja", "detalle"],
   },
+
+  // DETALLES
   {
     id: 7,
-    name: "Caja de Flores Silvestres",
+    name: "Osito de Felpa",
     description:
-      "Flores frescas de nuestra región en una caja artesanal preciosa. Huele increíble y se ve aún mejor. Un detalle para recordar.",
+      "Acompaña tu arreglo floral con un osito de felpa suave y adorable. El complemento perfecto para hacer tu regalo aún más especial.",
     price: 18.00,
     image: img7,
     category: "detalles",
-    badge: "Favorito",
+    badge: "Complemento",
     rating: 4.8,
     reviews: 91,
-    tags: ["silvestre", "caja", "artesanal"],
+    tags: ["osito", "regalo", "complemento"],
   },
   {
     id: 8,
-    name: "Centro de Mesa Floral",
+    name: "Kit de Acompañamiento",
     description:
-      "Un centro de mesa que hace que cualquier celebración sea especial. Flores de temporada en un arreglo que da gusto mirar.",
-    price: 32.00,
+      "Complementa tu regalo con globo metálico ($2.00), rótulo con mensaje ($2.00), bombones Ferrero Rocher ($10.00) o mensaje en botella de vidrio ($2.50). Pregúntanos cómo combinarlos.",
+    price: 2.00,
     image: img8,
     category: "detalles",
     rating: 4.7,
     reviews: 38,
-    tags: ["centro de mesa", "eventos", "decoración"],
+    tags: ["globo", "bombones", "mensaje", "complemento"],
   },
   {
     id: 9,
-    name: "Orquídea en Maceta",
+    name: "Bombones Ferrero Rocher",
     description:
-      "Una orquídea hermosa que dura semanas si la cuidas bien. Viene en una maceta artesanal lista para regalar o decorar tu hogar.",
-    price: 25.00,
+      "Caja de bombones Ferrero Rocher para endulzar el momento especial. El regalo ideal para acompañar cualquier arreglo floral.",
+    price: 10.00,
     image: img9,
     category: "detalles",
-    badge: "Larga duración",
+    badge: "Delicioso",
     rating: 4.9,
     reviews: 67,
-    tags: ["orquídea", "planta", "hogar"],
+    tags: ["bombones", "chocolate", "regalo"],
   },
 ];

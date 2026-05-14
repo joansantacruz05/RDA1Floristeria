@@ -1,229 +1,122 @@
 import { Link } from "react-router";
-import { ArrowRight, Truck, Shield, Clock, Gift, Sparkles } from "lucide-react";
-import { ProductCard } from "../components/ProductCard";
+import { img10 } from "../data/localImages";
 import { products } from "../data/products";
-import { img10, galleryImages } from "../data/localImages";
+import { ProductCard } from "../components/ProductCard";
+import { Truck, Heart, ShieldCheck } from "lucide-react";
 
-const heroImage =
-  "https://images.unsplash.com/photo-1738764731901-c83bb271df61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aWxkZmxvd2VyJTIwbWVhZG93JTIwc29mdCUyMG5hdHVyYWwlMjBsaWdodHxlbnwxfHx8fDE3NzY0NzM5ODZ8MA&ixlib=rb-4.1.0&q=80&w=1080";
-
-const featuredProducts = products.slice(0, 4);
-
-// 6 fotos reales para la galería
-const galleryGrid = galleryImages.slice(0, 6);
-
-const categories = [
-  {
-    title: "Ramos de Flores",
-    description: "Frescos, bonitos y hechos con cariño",
-    link: "/ramos",
-    emoji: "💐",
-    bg: "bg-rose-50",
-    border: "border-rose-200",
-    text: "text-rose-600",
-  },
-  {
-    title: "Detalles Florales",
-    description: "Arreglos especiales para momentos únicos",
-    link: "/detalles",
-    emoji: "🌸",
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    text: "text-emerald-600",
-  },
-  {
-    title: "Pedidos Especiales",
-    description: "Creamos el arreglo que imaginas",
-    link: "/pedidos-especiales",
-    emoji: "✨",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    text: "text-amber-600",
-  },
-];
-
-const benefits = [
-  { icon: Truck, title: "Envío el mismo día", desc: "Si pides antes del mediodía" },
-  { icon: Shield, title: "Flores frescas", desc: "O te devolvemos tu dinero" },
-  { icon: Clock, title: "Abierto 7 días", desc: "Incluyendo domingos y festivos" },
-  { icon: Gift, title: "Envoltorio bonito", desc: "Sin costo adicional" },
-];
+const featuredProducts = products.filter((p) => p.badge).slice(0, 4);
 
 export function Home() {
   return (
-    <div className="min-h-screen">
-      {/* HERO */}
-      <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-900/65 via-stone-900/45 to-stone-900/70" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={17} className="text-rose-300" />
-              <span className="text-rose-200 text-sm tracking-wide">
-                Flores con alma · Quito, Ecuador
-              </span>
-            </div>
-            <h1
-              className="text-white mb-5"
-              style={{
-                fontFamily: "Georgia, serif",
-                fontSize: "clamp(2.5rem, 6vw, 4.2rem)",
-                lineHeight: 1.2,
-                fontWeight: 400,
-              }}
+    <div>
+      {/* HERO BANNER */}
+      <section className="bg-gradient-to-br from-rose-600 via-rose-500 to-rose-700 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="text-6xl mb-6">🌹</div>
+          <h1
+            className="mb-4"
+            style={{ fontFamily: "Georgia, serif", fontSize: "3rem" }}
+          >
+            Ana Victoria
+          </h1>
+          <p className="text-rose-100 text-xl mb-2" style={{ fontFamily: "Georgia, serif" }}>
+            Creando Emociones
+          </p>
+          <p className="text-rose-200 max-w-xl mx-auto mb-8 leading-relaxed">
+            Flores frescas de fincas ecuatorianas de exportación, entregadas con amor en Quito y los valles.
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link
+              to="/ramos"
+              className="bg-white text-rose-700 hover:bg-rose-50 px-8 py-3 rounded-full text-sm font-medium transition-colors shadow-lg"
             >
-              Hacemos que tus momentos{" "}
-              <span className="text-rose-300">florezcan</span>
-            </h1>
-            <p className="text-stone-200 text-lg leading-relaxed mb-8 max-w-lg">
-              Cada ramo cuenta una historia. Trabajamos con flores frescas y mucho amor para crear arreglos que te hagan sonreír.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                to="/ramos"
-                className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-7 py-3.5 rounded-full transition-all text-sm shadow-lg hover:shadow-xl"
-              >
-                Ver Ramos <ArrowRight size={16} />
-              </Link>
-              <Link
-                to="/pedidos-especiales"
-                className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white border border-white/30 px-7 py-3.5 rounded-full transition-all text-sm"
-              >
-                Pedido Personalizado
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* BENEFITS BAR */}
-      <section className="bg-gradient-to-r from-rose-700 to-rose-600 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {benefits.map((b) => (
-              <div key={b.title} className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-rose-500/50 rounded-full flex items-center justify-center shrink-0">
-                  <b.icon size={18} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{b.title}</p>
-                  <p className="text-xs text-rose-100">{b.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CATEGORIES */}
-      <section className="py-20 bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2
-              className="text-stone-800 mb-3"
-              style={{ fontFamily: "Georgia, serif", fontSize: "2.2rem" }}
+              Ver Ramos
+            </Link>
+            <Link
+              to="/detalles"
+              className="border border-rose-200 text-white hover:bg-rose-600 px-8 py-3 rounded-full text-sm transition-colors"
             >
-              ¿Qué necesitas hoy?
-            </h2>
-            <p className="text-stone-600 max-w-md mx-auto">
-              Te ayudamos a encontrar las flores perfectas para cada ocasión
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {categories.map((cat) => (
-              <Link
-                key={cat.title}
-                to={cat.link}
-                className={`group ${cat.bg} rounded-2xl p-8 border ${cat.border} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
-              >
-                <div className="text-5xl mb-4">{cat.emoji}</div>
-                <h3 className="text-stone-800 mb-2">{cat.title}</h3>
-                <p className="text-stone-600 text-sm mb-4">{cat.description}</p>
-                <span className={`inline-flex items-center gap-1 ${cat.text} text-sm group-hover:gap-2 transition-all font-medium`}>
-                  Explorar <ArrowRight size={15} />
-                </span>
-              </Link>
-            ))}
+              Ver Detalles
+            </Link>
           </div>
         </div>
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h2
-                className="text-stone-800 mb-2"
-                style={{ fontFamily: "Georgia, serif", fontSize: "2.2rem" }}
-              >
-                Favoritos del mes
-              </h2>
-              <p className="text-stone-600">
-                Los arreglos que más han enamorado este mes
-              </p>
-            </div>
-            <Link
-              to="/ramos"
-              className="hidden sm:flex items-center gap-1 text-rose-600 hover:text-rose-700 text-sm transition-colors font-medium"
+          <div className="text-center mb-12">
+            <span className="text-rose-600 text-sm tracking-wide uppercase block mb-2 font-medium">
+              Lo más pedido
+            </span>
+            <h2
+              className="text-stone-800"
+              style={{ fontFamily: "Georgia, serif", fontSize: "2.2rem" }}
             >
-              Ver todo <ArrowRight size={15} />
-            </Link>
+              Productos destacados
+            </h2>
+            <p className="text-stone-500 mt-2">
+              Los favoritos de nuestros clientes para ocasiones especiales
+            </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+          <div className="text-center mt-10">
+            <Link
+              to="/ramos"
+              className="inline-flex items-center gap-2 border border-rose-300 text-rose-600 hover:bg-rose-50 px-6 py-3 rounded-full text-sm transition-colors"
+            >
+              Ver todos los productos →
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* GALERÍA DE FOTOS REALES */}
-      <section className="py-20 bg-stone-50">
+      {/* WHY CHOOSE US */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-rose-600 text-sm tracking-wide uppercase mb-2 block font-medium">
-              Nuestra florería
+            <span className="text-rose-600 text-sm tracking-wide uppercase block mb-2 font-medium">
+              ¿Por qué elegirnos?
             </span>
             <h2
-              className="text-stone-800 mb-3"
+              className="text-stone-800"
               style={{ fontFamily: "Georgia, serif", fontSize: "2.2rem" }}
             >
-              Hecho con amor, aquí en Quito
+              La mejor experiencia floral
             </h2>
-            <p className="text-stone-600 max-w-md mx-auto">
-              Cada arreglo que ves es real, hecho por nuestras manos. Así de bonito te llega a ti.
-            </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-            {galleryGrid.map((img, i) => (
-              <div
-                key={i}
-                className={`overflow-hidden rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 ${
-                  i === 0 ? "md:row-span-2" : ""
-                }`}
-              >
-                <img
-                  src={img}
-                  alt={`Florencia - arreglo ${i + 1}`}
-                  className={`w-full object-cover hover:scale-105 transition-transform duration-500 ${
-                    i === 0 ? "h-64 md:h-full" : "h-48 md:h-52"
-                  }`}
-                />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-rose-50 rounded-2xl p-8 text-center border border-rose-100">
+              <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Truck size={28} className="text-rose-600" />
               </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Link
-              to="/ramos"
-              className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-7 py-3.5 rounded-full transition-colors text-sm shadow-md"
-            >
-              Ver todos nuestros arreglos <ArrowRight size={16} />
-            </Link>
+              <h3 className="text-stone-800 mb-2">Envío el mismo día</h3>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Entregas gratuitas en Quito y los valles. Pide antes de las 12:00 pm y recíbelo el mismo día.
+              </p>
+            </div>
+            <div className="bg-emerald-50 rounded-2xl p-8 text-center border border-emerald-100">
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShieldCheck size={28} className="text-emerald-600" />
+              </div>
+              <h3 className="text-stone-800 mb-2">Frescura garantizada</h3>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Flores de fincas ecuatorianas de exportación. Si no están perfectas, te las cambiamos.
+              </p>
+            </div>
+            <div className="bg-amber-50 rounded-2xl p-8 text-center border border-amber-100">
+              <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart size={28} className="text-amber-600" />
+              </div>
+              <h3 className="text-stone-800 mb-2">Hecho con amor</h3>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Cada arreglo es diseñado artesanalmente con dedicación y cariño para hacer tu momento especial.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -235,7 +128,7 @@ export function Home() {
             <div className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
               <img
                 src={img10}
-                alt="Nuestra florería en Quito"
+                alt="Ana Victoria Floristería en Quito"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -247,55 +140,64 @@ export function Home() {
                 className="text-stone-800 mb-4"
                 style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
               >
-                Flores hechas con amor,<br />
-                desde el corazón del Ecuador
+                Ana Victoria · Creando Emociones<br />
+                <span className="text-rose-600 text-xl">desde el corazón del Ecuador</span>
               </h2>
               <p className="text-stone-600 leading-relaxed mb-4">
-                Florencia nació en 2014 cuando María decidió convertir su pasión por las flores en algo más. Hoy somos un equipo pequeño pero con mucho corazón, trabajando cada día desde Quito para traer alegría a través de las flores.
+                La única manera de vivir es hacerlo todo con amor. Por eso cada arreglo que creamos lleva ese sentimiento único que solo las flores pueden transmitir.
               </p>
               <p className="text-stone-600 leading-relaxed mb-6">
-                Ecuador es uno de los mayores productores de flores del mundo, y nosotros trabajamos directamente con los cultivadores locales para que cada flor llegue fresquísima a tu puerta. Porque sabemos que detrás de cada pedido hay una emoción, un mensaje, un momento importante.
+                Nuestros productos están elaborados con flores de fincas ecuatorianas de exportación, garantizando la mejor calidad y frescura. Hacemos entregas a domicilio sin recargo en Quito y los valles — agenda la fecha de tu entrega con anticipación.
               </p>
-              <Link
-                to="/pedidos-especiales"
-                className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-full transition-colors text-sm shadow-lg hover:shadow-xl"
-              >
-                Crear mi pedido especial <ArrowRight size={16} />
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="https://wa.me/593997895649"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-full transition-colors text-sm shadow-lg hover:shadow-xl"
+                >
+                  Escríbenos al 099-789-5649
+                </a>
+                <Link
+                  to="/pedidos-especiales"
+                  className="inline-flex items-center gap-2 border border-rose-300 text-rose-600 hover:bg-rose-50 px-6 py-3 rounded-full transition-colors text-sm"
+                >
+                  Pedido personalizado
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* NEWSLETTER */}
-      <section className="py-20 bg-stone-900 text-white">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <div className="text-4xl mb-4">🌷</div>
+      {/* CTA */}
+      <section className="py-20 bg-gradient-to-br from-emerald-700 to-emerald-800 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2
-            className="text-white mb-3"
-            style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
+            className="mb-4"
+            style={{ fontFamily: "Georgia, serif", fontSize: "2.2rem" }}
           >
-            No te pierdas nada
+            ¿Listo para sorprender?
           </h2>
-          <p className="text-stone-400 mb-8">
-            Recibe tips de cuidado, descuentos especiales y las novedades de la temporada
+          <p className="text-emerald-100 max-w-lg mx-auto mb-8 leading-relaxed">
+            Haz tu pedido hoy y recíbelo el mismo día en Quito. Flores frescas, amor eterno.
           </p>
-          <form
-            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <input
-              type="email"
-              placeholder="tu@correo.com"
-              className="flex-1 px-4 py-3 rounded-full bg-stone-800 border border-stone-700 text-white placeholder-stone-500 focus:outline-none focus:border-rose-500 text-sm"
-            />
-            <button
-              type="submit"
-              className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-full transition-colors text-sm whitespace-nowrap font-medium shadow-lg"
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link
+              to="/ramos"
+              className="bg-white text-emerald-800 hover:bg-emerald-50 px-8 py-3 rounded-full text-sm font-medium transition-colors shadow-lg"
             >
-              Suscribirme
-            </button>
-          </form>
+              Comprar ahora
+            </Link>
+            <a
+              href="https://wa.me/593997895649"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border border-emerald-200 text-white hover:bg-emerald-600 px-8 py-3 rounded-full text-sm transition-colors"
+            >
+              Consultar por WhatsApp
+            </a>
+          </div>
         </div>
       </section>
     </div>

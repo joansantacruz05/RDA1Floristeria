@@ -15,15 +15,16 @@ const FREE_SHIPPING_THRESHOLD = 40;
 const SHIPPING_COST = 3.50;
 
 export function Carrito() {
-  const { items, removeFromCart, updateQuantity, clearCart, total, itemCount } =
+  const { items, removeFromCart, updateQuantity, clearCart, subtotal, iva, itemCount } =
     useCart();
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
-  const discount = couponApplied ? Math.round(total * 0.1 * 100) / 100 : 0;
-  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const finalTotal = total - discount + shipping;
+  const discount = couponApplied ? Math.round(subtotal * 0.1 * 100) / 100 : 0;
+  const baseImponible = subtotal - discount;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const finalTotal = baseImponible + iva + shipping;
 
   const applyCoupon = () => {
     if (coupon.toUpperCase() === "FLORENCIA10") {
@@ -235,7 +236,7 @@ export function Carrito() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-stone-600">
                   <span>Subtotal ({itemCount} productos)</span>
-                  <span>${total.toFixed(2)} USD</span>
+                  <span>${subtotal.toFixed(2)} USD</span>
                 </div>
                 {couponApplied && (
                   <div className="flex justify-between text-emerald-600">
@@ -243,6 +244,14 @@ export function Carrito() {
                     <span>−${discount.toFixed(2)} USD</span>
                   </div>
                 )}
+                <div className="flex justify-between text-stone-600">
+                  <span>Base imponible</span>
+                  <span>${baseImponible.toFixed(2)} USD</span>
+                </div>
+                <div className="flex justify-between text-stone-600">
+                  <span>IVA (15%)</span>
+                  <span>${iva.toFixed(2)} USD</span>
+                </div>
                 <div className="flex justify-between text-stone-600">
                   <span className="flex items-center gap-1">
                     <Truck size={14} className="text-rose-400" />
@@ -258,7 +267,7 @@ export function Carrito() {
                 </div>
                 {shipping > 0 && (
                   <p className="text-xs text-stone-400">
-                    Agrega ${(FREE_SHIPPING_THRESHOLD - total).toFixed(2)} USD más para envío gratis
+                    Agrega ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)} USD más para envío gratis
                   </p>
                 )}
                 <div className="border-t border-stone-100 pt-3 flex justify-between">

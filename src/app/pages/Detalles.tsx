@@ -90,8 +90,40 @@ export function Detalles() {
           ))}
         </div>
 
+        {/* Why add-ons */}
+        <div className="mt-16">
+          <div className="text-center mb-10">
+            <h2
+              className="text-stone-800"
+              style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
+            >
+              ¿Por qué agregar un detalle extra?
+            </h2>
+            <p className="text-stone-500 mt-2">
+              Haz que tu regalo sea aún más especial con estos complementos
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-stone-100">
+              <div className="text-4xl mb-3">🧸</div>
+              <h4 className="text-stone-800 mb-1">Osito de Felpa</h4>
+              <p className="text-sm text-stone-500">El compañero perfecto para abrazar</p>
+            </div>
+            <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-stone-100">
+              <div className="text-4xl mb-3">🎈</div>
+              <h4 className="text-stone-800 mb-1">Globo Metálico</h4>
+              <p className="text-sm text-stone-500">Un toque brillante y festivo</p>
+            </div>
+            <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-stone-100">
+              <div className="text-4xl mb-3">🍫</div>
+              <h4 className="text-stone-800 mb-1">Bombones Ferrero</h4>
+              <p className="text-sm text-stone-500">Dulzura que complementa las flores</p>
+            </div>
+          </div>
+        </div>
+
         {/* Highlight cards */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-gradient-to-br from-rose-100 to-rose-50 rounded-2xl p-8 border border-rose-200">
             <div className="text-3xl mb-3">🎁</div>
             <h3 className="text-stone-800 mb-2" style={{ fontFamily: "Georgia, serif" }}>

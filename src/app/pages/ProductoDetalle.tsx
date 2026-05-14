@@ -178,7 +178,7 @@ export function ProductoDetalle() {
                 <span className="text-stone-400 text-sm">USD</span>
               </div>
               <p className="text-sm text-stone-500 mt-1">
-                Precio incluye empaque artesanal y tarjeta personalizada
+                Precio incluye IVA (15%), empaque artesanal y tarjeta personalizada
               </p>
             </div>
 
