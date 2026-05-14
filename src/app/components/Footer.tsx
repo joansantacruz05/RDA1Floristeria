@@ -68,7 +68,7 @@ export function Footer() {
               <li className="flex items-center gap-2">
                 <Mail size={15} className="text-rose-400 shrink-0" />
                 <a href="mailto:anavictoria.conamor@gmail.com" className="hover:text-rose-400 transition-colors">
-                  anavictoria.conamor@gmail.com
+paola.villamarin@hotmail.com
                 </a>
               </li>
             </ul>
