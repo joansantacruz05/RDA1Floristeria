@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Flower2 } from "lucide-react";
 
 const detallesProducts = products.filter((p) => p.category === "detalles");
 
@@ -28,25 +29,43 @@ export function Detalles() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Hero banner */}
-      <div className="bg-gradient-to-br from-emerald-100 via-emerald-50 to-stone-50 py-16">
+      <motion.div
+        className="bg-gradient-to-br from-emerald-100 via-emerald-50 to-stone-50 py-16"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-5xl mb-4">🌸</div>
+          <motion.div
+            className="text-5xl mb-4"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10 }}
+          >
+            🌸
+          </motion.div>
           <h1
             className="text-stone-800 mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "2.8rem" }}
           >
+            <Flower2 size={32} className="inline text-emerald-400 mr-2 -mt-1" />
             Detalles Florales
           </h1>
           <p className="text-stone-600 max-w-lg mx-auto leading-relaxed">
             Arreglos especiales, cajas florales y plantas pensadas para sorprender. Cada detalle con nuestro toque personal.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Occasion filter pills */}
-        <div className="flex gap-2 flex-wrap mb-6">
+        <motion.div
+          className="flex gap-2 flex-wrap mb-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.4 }}
+        >
           {occasions.map((occ) => (
             <button
               key={occ}
@@ -60,10 +79,15 @@ export function Detalles() {
               {occ}
             </button>
           ))}
-        </div>
+        </motion.div>
 
         {/* Filters bar */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200">
+        <motion.div
+          className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+        >
           <p className="text-sm text-stone-600">
             {sortedProducts.length} detalles disponibles
           </p>
@@ -81,50 +105,96 @@ export function Detalles() {
               ))}
             </select>
           </div>
-        </div>
+        </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+          }}
+          initial="hidden"
+          animate="show"
+        >
           {sortedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <motion.div
+              key={product.id}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+              }}
+            >
+              <ProductCard product={product} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Why add-ons */}
-        <div className="mt-16">
+        <motion.div
+          className="mt-16"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="text-center mb-10">
             <h2
               className="text-stone-800"
               style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
             >
+              <Flower2 size={26} className="inline text-rose-400 mr-2 -mt-1" />
               ¿Por qué agregar un detalle extra?
             </h2>
             <p className="text-stone-500 mt-2">
               Haz que tu regalo sea aún más especial con estos complementos
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-stone-100">
-              <div className="text-4xl mb-3">🧸</div>
-              <h4 className="text-stone-800 mb-1">Osito de Felpa</h4>
-              <p className="text-sm text-stone-500">El compañero perfecto para abrazar</p>
-            </div>
-            <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-stone-100">
-              <div className="text-4xl mb-3">🎈</div>
-              <h4 className="text-stone-800 mb-1">Globo Metálico</h4>
-              <p className="text-sm text-stone-500">Un toque brillante y festivo</p>
-            </div>
-            <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-stone-100">
-              <div className="text-4xl mb-3">🍫</div>
-              <h4 className="text-stone-800 mb-1">Bombones Ferrero</h4>
-              <p className="text-sm text-stone-500">Dulzura que complementa las flores</p>
-            </div>
-          </div>
-        </div>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.12 } },
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            {[
+              { icon: "🧸", title: "Osito de Felpa", desc: "El compañero perfecto para abrazar" },
+              { icon: "🎈", title: "Globo Metálico", desc: "Un toque brillante y festivo" },
+              { icon: "🍫", title: "Bombones Ferrero", desc: "Dulzura que complementa las flores" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                className="bg-white rounded-2xl p-6 text-center shadow-sm border border-stone-100"
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+                }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              >
+                <div className="text-4xl mb-3">{item.icon}</div>
+                <h4 className="text-stone-800 mb-1">{item.title}</h4>
+                <p className="text-sm text-stone-500">{item.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
 
         {/* Highlight cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-rose-100 to-rose-50 rounded-2xl p-8 border border-rose-200">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.div
+            className="bg-gradient-to-br from-rose-100 to-rose-50 rounded-2xl p-8 border border-rose-200"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+          >
             <div className="text-3xl mb-3">🎁</div>
             <h3 className="text-stone-800 mb-2" style={{ fontFamily: "Georgia, serif" }}>
               Listo para regalar
@@ -132,8 +202,12 @@ export function Detalles() {
             <p className="text-stone-600 text-sm leading-relaxed">
               Todos nuestros arreglos vienen listos para entregar. Si quieres, podemos incluir una tarjeta con tu mensaje personal.
             </p>
-          </div>
-          <div className="bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl p-8 border border-emerald-200">
+          </motion.div>
+          <motion.div
+            className="bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl p-8 border border-emerald-200"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+          >
             <div className="text-3xl mb-3">🚚</div>
             <h3 className="text-stone-800 mb-2" style={{ fontFamily: "Georgia, serif" }}>
               Envío el mismo día
@@ -141,8 +215,8 @@ export function Detalles() {
             <p className="text-stone-600 text-sm leading-relaxed">
               Si pides antes del mediodía, te lo llevamos el mismo día en Quito. Sin complicaciones, sin costos extra.
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

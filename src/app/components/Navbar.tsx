@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { ShoppingCart, Flower2, Menu, X, Phone } from "lucide-react";
+import { ShoppingCart, Flower2, Menu, X, Phone, Sparkles } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
 export function Navbar() {
@@ -9,10 +9,10 @@ export function Navbar() {
   const location = useLocation();
 
   const navLinks = [
-    { to: "/", label: "Inicio" },
-    { to: "/ramos", label: "Ramos" },
-    { to: "/detalles", label: "Detalles Florales" },
-    { to: "/pedidos-especiales", label: "Pedidos Especiales" },
+    { to: "/", label: "Inicio", icon: Flower2 },
+    { to: "/ramos", label: "Ramos", icon: Flower2 },
+    { to: "/detalles", label: "Detalles Florales", icon: Flower2 },
+    { to: "/pedidos-especiales", label: "Pedidos Especiales", icon: Sparkles },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -41,20 +41,24 @@ export function Navbar() {
             </div>
           </Link>
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`relative text-sm transition-colors pb-1 ${
-                  isActive(link.to) ? "text-rose-600" : "text-stone-600 hover:text-rose-500"
-                }`}
-              >
-                {link.label}
-                {isActive(link.to) && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500 rounded-full" />
-                )}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`relative flex items-center gap-1.5 text-sm transition-colors pb-1 ${
+                    isActive(link.to) ? "text-rose-600" : "text-stone-600 hover:text-rose-500"
+                  }`}
+                >
+                  <Icon size={14} className="shrink-0" />
+                  {link.label}
+                  {isActive(link.to) && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500 rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
           <div className="flex items-center gap-3">
             <Link to="/carrito" className="relative p-2 rounded-full hover:bg-rose-50 transition-colors">
@@ -76,18 +80,22 @@ export function Navbar() {
       </div>
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-rose-100 px-4 pb-4 pt-2">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              onClick={() => setMenuOpen(false)}
-              className={`block py-3 text-sm border-b border-rose-50 last:border-0 ${
-                isActive(link.to) ? "text-rose-600" : "text-stone-600"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+                className={`flex items-center gap-2 py-3 text-sm border-b border-rose-50 last:border-0 ${
+                  isActive(link.to) ? "text-rose-600" : "text-stone-600"
+                }`}
+              >
+                <Icon size={15} className="shrink-0 text-rose-400" />
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
       )}
     </nav>

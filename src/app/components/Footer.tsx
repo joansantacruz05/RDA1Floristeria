@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Flower2, Instagram, Facebook, MapPin, Phone, Mail, Heart } from "lucide-react";
+import { Flower2, Sparkles, ShoppingBag, Instagram, Facebook, MapPin, Phone, Mail, Heart } from "lucide-react";
 
 export function Footer() {
   return (
@@ -34,10 +34,10 @@ export function Footer() {
           <div>
             <h4 className="text-white mb-4">Nuestros productos</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/ramos" className="hover:text-rose-400 transition-colors">Ramos de Flores</Link></li>
-              <li><Link to="/detalles" className="hover:text-rose-400 transition-colors">Detalles Florales</Link></li>
-              <li><Link to="/pedidos-especiales" className="hover:text-rose-400 transition-colors">Pedidos Especiales</Link></li>
-              <li><Link to="/carrito" className="hover:text-rose-400 transition-colors">Mi Carrito</Link></li>
+              <li><Link to="/ramos" className="hover:text-rose-400 transition-colors inline-flex items-center gap-1.5"><Flower2 size={13} className="text-rose-400" /> Ramos de Flores</Link></li>
+              <li><Link to="/detalles" className="hover:text-rose-400 transition-colors inline-flex items-center gap-1.5"><Flower2 size={13} className="text-rose-400" /> Detalles Florales</Link></li>
+              <li><Link to="/pedidos-especiales" className="hover:text-rose-400 transition-colors inline-flex items-center gap-1.5"><Sparkles size={13} className="text-rose-400" /> Pedidos Especiales</Link></li>
+              <li><Link to="/carrito" className="hover:text-rose-400 transition-colors inline-flex items-center gap-1.5"><ShoppingBag size={13} className="text-rose-400" /> Mi Carrito</Link></li>
             </ul>
           </div>
 

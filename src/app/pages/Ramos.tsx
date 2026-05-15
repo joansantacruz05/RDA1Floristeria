@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Flower2 } from "lucide-react";
 
 const ramoProducts = products.filter((p) => p.category === "ramos");
 
@@ -25,25 +26,43 @@ export function Ramos() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Hero banner */}
-      <div className="bg-gradient-to-br from-rose-100 via-rose-50 to-stone-50 py-16">
+      <motion.div
+        className="bg-gradient-to-br from-rose-100 via-rose-50 to-stone-50 py-16"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-5xl mb-4">💐</div>
+          <motion.div
+            className="text-5xl mb-4"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10 }}
+          >
+            💐
+          </motion.div>
           <h1
             className="text-stone-800 mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "2.8rem" }}
           >
+            <Flower2 size={32} className="inline text-rose-400 mr-2 -mt-1" />
             Ramos de Flores
           </h1>
           <p className="text-stone-600 max-w-lg mx-auto leading-relaxed">
             Cada ramo está hecho a mano con flores frescas del día. Te garantizamos que llegarán hermosos a tu destino en Quito.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Filters bar */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200">
+        <motion.div
+          className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+        >
           <p className="text-sm text-stone-600">
             {sortedProducts.length} ramos disponibles
           </p>
@@ -61,17 +80,39 @@ export function Ramos() {
               ))}
             </select>
           </div>
-        </div>
+        </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+          }}
+          initial="hidden"
+          animate="show"
+        >
           {sortedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <motion.div
+              key={product.id}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+              }}
+            >
+              <ProductCard product={product} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Tips section */}
-        <div className="mt-16 bg-gradient-to-br from-rose-50 to-emerald-50 rounded-2xl p-8 border border-rose-100">
+        <motion.div
+          className="mt-16 bg-gradient-to-br from-rose-50 to-emerald-50 rounded-2xl p-8 border border-rose-100"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+        >
           <h3
             className="text-stone-800 mb-6 text-center"
             style={{ fontFamily: "Georgia, serif" }}
@@ -95,17 +136,24 @@ export function Ramos() {
                 title: "Corta al llegar",
                 desc: "Cuando recibas tu ramo, corta 2cm de cada tallo. Es como darles un refresh.",
               },
-            ].map((tip) => (
-              <div key={tip.title} className="flex gap-3">
+            ].map((tip, i) => (
+              <motion.div
+                key={tip.title}
+                className="flex gap-3"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.4 }}
+              >
                 <span className="text-2xl">{tip.icon}</span>
                 <div>
                   <h4 className="text-stone-800 mb-1">{tip.title}</h4>
                   <p className="text-sm text-stone-600">{tip.desc}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

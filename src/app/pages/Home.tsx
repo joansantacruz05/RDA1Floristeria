@@ -1,31 +1,74 @@
 import { Link } from "react-router";
+import { motion } from "motion/react";
 import { img10 } from "../data/localImages";
 import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
-import { Truck, Heart, ShieldCheck } from "lucide-react";
+import { Truck, Heart, ShieldCheck, Flower2 } from "lucide-react";
 
 const featuredProducts = products.filter((p) => p.badge).slice(0, 4);
+
+const fadeUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-80px" },
+  transition: { duration: 0.6 },
+};
+
+const stagger = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-50px" },
+  transition: { duration: 0.5, staggerChildren: 0.1 },
+};
 
 export function Home() {
   return (
     <div>
       {/* HERO BANNER */}
-      <section className="bg-gradient-to-br from-rose-600 via-rose-500 to-rose-700 text-white py-20">
+      <motion.section
+        className="bg-gradient-to-br from-rose-600 via-rose-500 to-rose-700 text-white py-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-6xl mb-6">🌹</div>
+          <motion.div
+            className="text-6xl mb-6"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 120, damping: 12 }}
+          >
+            🌹
+          </motion.div>
           <h1
             className="mb-4"
             style={{ fontFamily: "Georgia, serif", fontSize: "3rem" }}
           >
             Ana Victoria
           </h1>
-          <p className="text-rose-100 text-xl mb-2" style={{ fontFamily: "Georgia, serif" }}>
+          <motion.p
+            className="text-rose-100 text-xl mb-2"
+            style={{ fontFamily: "Georgia, serif" }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
             Creando Emociones
-          </p>
-          <p className="text-rose-200 max-w-xl mx-auto mb-8 leading-relaxed">
+          </motion.p>
+          <motion.p
+            className="text-rose-200 max-w-xl mx-auto mb-8 leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
             Flores frescas de fincas ecuatorianas de exportación, entregadas con amor en Quito y los valles.
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center">
+          </motion.p>
+          <motion.div
+            className="flex flex-wrap gap-3 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+          >
             <Link
               to="/ramos"
               className="bg-white text-rose-700 hover:bg-rose-50 px-8 py-3 rounded-full text-sm font-medium transition-colors shadow-lg"
@@ -38,12 +81,12 @@ export function Home() {
             >
               Ver Detalles
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-20 bg-stone-50">
+      <motion.section className="py-20 bg-stone-50" {...fadeUp}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-rose-600 text-sm tracking-wide uppercase block mb-2 font-medium">
@@ -53,30 +96,54 @@ export function Home() {
               className="text-stone-800"
               style={{ fontFamily: "Georgia, serif", fontSize: "2.2rem" }}
             >
+              <Flower2 size={28} className="inline text-rose-400 mr-2 -mt-1" />
               Productos destacados
             </h2>
             <p className="text-stone-500 mt-2">
               Los favoritos de nuestros clientes para ocasiones especiales
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.1 } },
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            {featuredProducts.map((product, i) => (
+              <motion.div
+                key={product.id}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
             ))}
-          </div>
-          <div className="text-center mt-10">
+          </motion.div>
+          <motion.div
+            className="text-center mt-10"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+          >
             <Link
               to="/ramos"
               className="inline-flex items-center gap-2 border border-rose-300 text-rose-600 hover:bg-rose-50 px-6 py-3 rounded-full text-sm transition-colors"
             >
               Ver todos los productos →
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* WHY CHOOSE US */}
-      <section className="py-20 bg-white">
+      <motion.section className="py-20 bg-white" {...fadeUp}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-rose-600 text-sm tracking-wide uppercase block mb-2 font-medium">
@@ -86,53 +153,100 @@ export function Home() {
               className="text-stone-800"
               style={{ fontFamily: "Georgia, serif", fontSize: "2.2rem" }}
             >
+              <Flower2 size={28} className="inline text-rose-400 mr-2 -mt-1" />
               La mejor experiencia floral
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-rose-50 rounded-2xl p-8 text-center border border-rose-100">
-              <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Truck size={28} className="text-rose-600" />
-              </div>
-              <h3 className="text-stone-800 mb-2">Envío el mismo día</h3>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Entregas gratuitas en Quito y los valles. Pide antes de las 12:00 pm y recíbelo el mismo día.
-              </p>
-            </div>
-            <div className="bg-emerald-50 rounded-2xl p-8 text-center border border-emerald-100">
-              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShieldCheck size={28} className="text-emerald-600" />
-              </div>
-              <h3 className="text-stone-800 mb-2">Frescura garantizada</h3>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Flores de fincas ecuatorianas de exportación. Si no están perfectas, te las cambiamos.
-              </p>
-            </div>
-            <div className="bg-amber-50 rounded-2xl p-8 text-center border border-amber-100">
-              <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart size={28} className="text-amber-600" />
-              </div>
-              <h3 className="text-stone-800 mb-2">Hecho con amor</h3>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Cada arreglo es diseñado artesanalmente con dedicación y cariño para hacer tu momento especial.
-              </p>
-            </div>
-          </div>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.15 } },
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            {[
+              {
+                bg: "bg-rose-50",
+                border: "border-rose-100",
+                iconBg: "bg-rose-100",
+                iconColor: "text-rose-600",
+                Icon: Truck,
+                title: "Envío el mismo día",
+                desc: "Entregas gratuitas en Quito y los valles. Pide antes de las 12:00 pm y recíbelo el mismo día.",
+              },
+              {
+                bg: "bg-emerald-50",
+                border: "border-emerald-100",
+                iconBg: "bg-emerald-100",
+                iconColor: "text-emerald-600",
+                Icon: ShieldCheck,
+                title: "Frescura garantizada",
+                desc: "Flores de fincas ecuatorianas de exportación. Si no están perfectas, te las cambiamos.",
+              },
+              {
+                bg: "bg-amber-50",
+                border: "border-amber-100",
+                iconBg: "bg-amber-100",
+                iconColor: "text-amber-600",
+                Icon: Heart,
+                title: "Hecho con amor",
+                desc: "Cada arreglo es diseñado artesanalmente con dedicación y cariño para hacer tu momento especial.",
+              },
+            ].map((item, i) => {
+              const Icon = item.Icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  className={`${item.bg} rounded-2xl p-8 text-center ${item.border}`}
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                  }}
+                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                >
+                  <div className={`w-14 h-14 ${item.iconBg} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    <Icon size={28} className={item.iconColor} />
+                  </div>
+                  <h3 className="text-stone-800 mb-2">{item.title}</h3>
+                  <p className="text-sm text-stone-600 leading-relaxed">{item.desc}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ABOUT SECTION */}
-      <section className="py-20 bg-gradient-to-br from-rose-50 via-amber-50/30 to-rose-50">
+      <motion.section
+        className="py-20 bg-gradient-to-br from-rose-50 via-amber-50/30 to-rose-50"
+        {...fadeUp}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
-              <img
+            <motion.div
+              className="rounded-2xl overflow-hidden aspect-[4/3] shadow-lg"
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7 }}
+            >
+              <motion.img
                 src={img10}
                 alt="Ana Victoria Floristería en Quito"
                 className="w-full h-full object-cover"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.5 }}
               />
-            </div>
-            <div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+            >
               <span className="text-rose-600 text-sm tracking-wide uppercase mb-3 block font-medium">
                 Sobre nosotros
               </span>
@@ -140,6 +254,7 @@ export function Home() {
                 className="text-stone-800 mb-4"
                 style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
               >
+                <Flower2 size={26} className="inline text-rose-400 mr-2 -mt-1" />
                 Ana Victoria · Creando Emociones<br />
                 <span className="text-rose-600 text-xl">desde el corazón del Ecuador</span>
               </h2>
@@ -165,13 +280,16 @@ export function Home() {
                   Pedido personalizado
                 </Link>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-br from-emerald-700 to-emerald-800 text-white">
+      <motion.section
+        className="py-20 bg-gradient-to-br from-emerald-700 to-emerald-800 text-white"
+        {...fadeUp}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2
             className="mb-4"
@@ -199,7 +317,7 @@ export function Home() {
             </a>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

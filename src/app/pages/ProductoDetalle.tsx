@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router";
+import { motion } from "motion/react";
 import { products } from "../data/products";
 import { useCart } from "../context/CartContext";
 import {
@@ -88,23 +89,44 @@ export function ProductoDetalle() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Image */}
-          <div className="relative">
-            <div className="rounded-2xl overflow-hidden aspect-square shadow-sm">
-              <img
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div
+              className="rounded-2xl overflow-hidden aspect-square shadow-sm"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.4 }}
+            >
+              <motion.img
                 src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                whileHover={{ scale: 1.08 }}
+                transition={{ duration: 0.5 }}
               />
-            </div>
+            </motion.div>
             {product.badge && (
-              <span className="absolute top-4 left-4 bg-rose-500 text-white text-xs px-3 py-1 rounded-full">
+              <motion.span
+                className="absolute top-4 left-4 bg-rose-500 text-white text-xs px-3 py-1 rounded-full"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              >
                 {product.badge}
-              </span>
+              </motion.span>
             )}
-          </div>
+          </motion.div>
 
           {/* Info */}
-          <div className="flex flex-col">
+          <motion.div
+            className="flex flex-col"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             {/* Category + Wishlist */}
             <div className="flex items-center justify-between mb-2">
               <span className="text-rose-500 text-sm">{categoryLabel}</span>
@@ -247,24 +269,47 @@ export function ProductoDetalle() {
                 <span>Frescura garantizada o te devolvemos tu dinero</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Related */}
         {related.length > 0 && (
-          <div className="mt-20">
+          <motion.div
+            className="mt-20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+          >
             <h2
               className="text-stone-800 mb-8"
               style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}
             >
               También te puede gustar
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.1 } },
+              }}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+            >
               {related.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <motion.div
+                  key={p.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+                  }}
+                >
+                  <ProductCard product={p} />
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
       </div>
     </div>
