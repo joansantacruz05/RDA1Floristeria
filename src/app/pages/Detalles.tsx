@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
+import { img6 } from "../data/localImages";
 import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
 import { SlidersHorizontal, Flower2 } from "lucide-react";
@@ -19,7 +20,11 @@ export function Detalles() {
   const [sort, setSort] = useState("default");
   const [occasion, setOccasion] = useState("Todos");
 
-  const sortedProducts = [...detallesProducts].sort((a, b) => {
+  const filteredByOccasion = occasion === "Todos"
+    ? detallesProducts
+    : detallesProducts.filter((p) => p.occasion === occasion);
+
+  const sortedProducts = [...filteredByOccasion].sort((a, b) => {
     if (sort === "price-asc") return a.price - b.price;
     if (sort === "price-desc") return b.price - a.price;
     if (sort === "rating") return b.rating - a.rating;
@@ -30,12 +35,17 @@ export function Detalles() {
     <div className="min-h-screen bg-stone-50">
       {/* Hero banner */}
       <motion.div
-        className="bg-gradient-to-br from-emerald-100 via-emerald-50 to-stone-50 py-16"
+        className="relative py-16 overflow-hidden"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${img6})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/70 to-stone-900/80" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             className="text-5xl mb-4"
             initial={{ scale: 0, rotate: -180 }}
@@ -45,13 +55,13 @@ export function Detalles() {
             🌸
           </motion.div>
           <h1
-            className="text-stone-800 mb-3"
+            className="text-white mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "2.8rem" }}
           >
-            <Flower2 size={32} className="inline text-emerald-400 mr-2 -mt-1" />
+            <Flower2 size={32} className="inline text-emerald-200 mr-2 -mt-1" />
             Detalles Florales
           </h1>
-          <p className="text-stone-600 max-w-lg mx-auto leading-relaxed">
+          <p className="text-emerald-100 max-w-lg mx-auto leading-relaxed">
             Arreglos especiales, cajas florales y plantas pensadas para sorprender. Cada detalle con nuestro toque personal.
           </p>
         </div>

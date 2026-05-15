@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { motion } from "motion/react";
-import { img10 } from "../data/localImages";
+import { img5, img10 } from "../data/localImages";
 import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
 import { Truck, Heart, ShieldCheck, Flower2 } from "lucide-react";
@@ -26,12 +26,17 @@ export function Home() {
     <div>
       {/* HERO BANNER */}
       <motion.section
-        className="bg-gradient-to-br from-rose-600 via-rose-500 to-rose-700 text-white py-20"
+        className="relative text-white py-20 overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${img5})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-900/85 via-rose-800/80 to-rose-950/90" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             className="text-6xl mb-6"
             initial={{ scale: 0, rotate: -180 }}
