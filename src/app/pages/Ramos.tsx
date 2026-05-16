@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { motion } from "motion/react";
-import { img3 } from "../data/localImages";
 import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
-import { SlidersHorizontal, Flower2 } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
+import { motion } from "motion/react";
 
 const ramoProducts = products.filter((p) => p.category === "ramos");
 
@@ -13,6 +12,9 @@ const sortOptions = [
   { value: "price-desc", label: "Precio: mayor a menor" },
   { value: "rating", label: "Mejor valorados" },
 ];
+
+const heroBg =
+  "https://images.unsplash.com/photo-1490750967868-88df5691cc5c?auto=format&fit=crop&w=1400&q=80";
 
 export function Ramos() {
   const [sort, setSort] = useState("default");
@@ -26,49 +28,46 @@ export function Ramos() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Hero banner */}
-      <motion.div
-        className="relative py-16 overflow-hidden"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
+      {/* Hero banner con imagen */}
+      <div className="relative h-72 flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${img3})` }}
+          style={{ backgroundImage: `url(${heroBg})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-900/80 via-rose-800/70 to-stone-900/80" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-rose-900/60 via-rose-800/50 to-stone-900/70" />
+        <div className="relative text-center px-4">
           <motion.div
-            className="text-5xl mb-4"
-            initial={{ scale: 0, rotate: -180 }}
+            initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 100, damping: 10 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="text-5xl mb-4"
           >
             💐
           </motion.div>
-          <h1
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
             className="text-white mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "2.8rem" }}
           >
-            <Flower2 size={32} className="inline text-rose-200 mr-2 -mt-1" />
             Ramos de Flores
-          </h1>
-          <p className="text-rose-100 max-w-lg mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-rose-100 max-w-lg mx-auto leading-relaxed"
+          >
             Cada ramo está hecho a mano con flores frescas del día. Te garantizamos que llegarán hermosos a tu destino en Quito.
-          </p>
+          </motion.p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Filters bar */}
-        <motion.div
-          className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-        >
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200">
           <p className="text-sm text-stone-600">
             {sortedProducts.length} ramos disponibles
           </p>
@@ -86,38 +85,29 @@ export function Ramos() {
               ))}
             </select>
           </div>
-        </motion.div>
+        </div>
 
         {/* Grid */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          variants={{
-            hidden: { opacity: 0 },
-            show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-          }}
-          initial="hidden"
-          animate="show"
-        >
-          {sortedProducts.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sortedProducts.map((product, i) => (
             <motion.div
               key={product.id}
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06, duration: 0.35 }}
             >
               <ProductCard product={product} />
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Tips section */}
         <motion.div
-          className="mt-16 bg-gradient-to-br from-rose-50 to-emerald-50 rounded-2xl p-8 border border-rose-100"
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mt-16 bg-gradient-to-br from-rose-50 to-emerald-50 rounded-2xl p-8 border border-rose-100"
         >
           <h3
             className="text-stone-800 mb-6 text-center"
@@ -145,11 +135,11 @@ export function Ramos() {
             ].map((tip, i) => (
               <motion.div
                 key={tip.title}
-                className="flex gap-3"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.4 }}
+                transition={{ delay: i * 0.1 }}
+                className="flex gap-3"
               >
                 <span className="text-2xl">{tip.icon}</span>
                 <div>

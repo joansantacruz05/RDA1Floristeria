@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { motion } from "motion/react";
 import { ShoppingCart, Star, Heart } from "lucide-react";
 import { useState } from "react";
 import { Product } from "../data/products";
@@ -23,19 +22,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link to={`/producto/${product.id}`} className="group block">
-      <motion.div
-        className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-stone-100 hover:border-rose-200"
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.2 }}
-      >
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-100 hover:border-rose-200">
         {/* Image */}
         <div className="relative overflow-hidden aspect-[4/3]">
-          <motion.img
+          <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover"
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.5 }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           {/* Badge */}
           {product.badge && (
@@ -44,20 +37,19 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
           {/* Wishlist */}
-          <motion.button
+          <button
             onClick={(e) => {
               e.preventDefault();
               setWished(!wished);
             }}
             className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-sm"
-            whileTap={{ scale: 0.8 }}
           >
             <Heart
               size={15}
               className={wished ? "text-rose-500" : "text-stone-400"}
               fill={wished ? "currentColor" : "none"}
             />
-          </motion.button>
+          </button>
         </div>
 
         {/* Info */}
@@ -93,25 +85,21 @@ export function ProductCard({ product }: ProductCardProps) {
                 ${product.price.toFixed(2)}
               </span>
               <span className="text-xs text-stone-400 ml-1">USD</span>
-              <span className="text-[10px] text-stone-400 block">IVA incl.</span>
             </div>
-            <motion.button
+            <button
               onClick={handleAddToCart}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors duration-200 ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
                 added
                   ? "bg-emerald-500 text-white"
                   : "bg-rose-600 hover:bg-rose-700 text-white shadow-sm"
               }`}
-              whileTap={{ scale: 0.9 }}
-              animate={added ? { scale: [1, 1.05, 1] } : {}}
-              transition={{ duration: 0.3 }}
             >
               <ShoppingCart size={15} />
               {added ? "¡Listo!" : "Añadir"}
-            </motion.button>
+            </button>
           </div>
         </div>
-      </motion.div>
+      </div>
     </Link>
   );
 }

@@ -1,6 +1,7 @@
-import { createHashRouter, Outlet } from "react-router";
+import { createBrowserRouter, Outlet } from "react-router";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
+import { WhatsAppButton } from "./components/WhatsAppButton";
 import { Home } from "./pages/Home";
 import { Ramos } from "./pages/Ramos";
 import { Detalles } from "./pages/Detalles";
@@ -16,6 +17,7 @@ function Root() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 }
@@ -34,7 +36,7 @@ function NotFound() {
   );
 }
 
-export const router = createHashRouter([
+export const router = createBrowserRouter([
   {
     path: "/",
     Component: Root,

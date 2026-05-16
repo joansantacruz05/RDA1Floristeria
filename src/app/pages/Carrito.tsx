@@ -9,25 +9,27 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
-// Ecuador: envío gratis a partir de $40 USD, costo de envío $3.50
 const FREE_SHIPPING_THRESHOLD = 40;
 const SHIPPING_COST = 3.50;
+const IVA_RATE = 0.15;
 
 export function Carrito() {
-  const { items, removeFromCart, updateQuantity, clearCart, subtotal, iva, itemCount } =
+  const { items, removeFromCart, updateQuantity, clearCart, total, itemCount } =
     useCart();
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
-  const discount = couponApplied ? Math.round(subtotal * 0.1 * 100) / 100 : 0;
-  const baseImponible = subtotal - discount;
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const finalTotal = baseImponible + iva + shipping;
+  const discount = couponApplied ? Math.round(total * 0.1 * 100) / 100 : 0;
+  const subtotalAfterDiscount = total - discount;
+  const iva = Math.round(subtotalAfterDiscount * IVA_RATE * 100) / 100;
+  const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const finalTotal = subtotalAfterDiscount + iva + shipping;
 
   const applyCoupon = () => {
-    if (coupon.toUpperCase() === "FLORENCIA10") {
+    if (coupon.toUpperCase() === "ANAVICTORIA10") {
       setCouponApplied(true);
     }
   };
@@ -35,10 +37,20 @@ export function Carrito() {
   if (orderPlaced) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
-        <div className="bg-white rounded-3xl p-12 max-w-md w-full text-center shadow-sm">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 200 }}
+          className="bg-white rounded-3xl p-12 max-w-md w-full text-center shadow-sm"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 250 }}
+            className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
             <CheckCircle size={40} className="text-emerald-500" />
-          </div>
+          </motion.div>
           <h2
             className="text-stone-800 mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}
@@ -56,7 +68,7 @@ export function Carrito() {
           >
             Seguir comprando
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -64,7 +76,11 @@ export function Carrito() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
-        <div className="text-center max-w-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center max-w-sm"
+        >
           <div className="text-7xl mb-6">🛒</div>
           <h2
             className="text-stone-800 mb-3"
@@ -89,7 +105,7 @@ export function Carrito() {
               Ver Detalles
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -117,76 +133,83 @@ export function Carrito() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart items */}
           <div className="lg:col-span-2 space-y-4">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white rounded-2xl p-5 shadow-sm flex gap-4"
-              >
-                <Link to={`/producto/${item.id}`}>
-                  <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </Link>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <Link
-                        to={`/producto/${item.id}`}
-                        className="text-stone-800 hover:text-rose-600 transition-colors line-clamp-1"
+            <AnimatePresence>
+              {items.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20, height: 0, marginBottom: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="bg-white rounded-2xl p-5 shadow-sm flex gap-4"
+                >
+                  <Link to={`/producto/${item.id}`}>
+                    <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <Link
+                          to={`/producto/${item.id}`}
+                          className="text-stone-800 hover:text-rose-600 transition-colors line-clamp-1"
+                        >
+                          {item.name}
+                        </Link>
+                        {item.badge && (
+                          <span className="text-xs text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-stone-400 hover:text-red-500 transition-colors shrink-0 p-1"
                       >
-                        {item.name}
-                      </Link>
-                      {item.badge && (
-                        <span className="text-xs text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">
-                          {item.badge}
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                    <p className="text-sm text-stone-400 mt-1 line-clamp-1">
+                      {item.description}
+                    </p>
+                    <div className="flex items-center justify-between mt-3">
+                      {/* Quantity controls */}
+                      <div className="flex items-center border border-stone-200 rounded-lg overflow-hidden">
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
+                          className="px-3 py-1 hover:bg-stone-50 transition-colors text-stone-600 text-lg"
+                        >
+                          −
+                        </button>
+                        <span className="px-3 py-1 border-x border-stone-200 text-sm min-w-[2.5rem] text-center">
+                          {item.quantity}
                         </span>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-stone-400 hover:text-red-500 transition-colors shrink-0 p-1"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                  <p className="text-sm text-stone-400 mt-1 line-clamp-1">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center justify-between mt-3">
-                    {/* Quantity controls */}
-                    <div className="flex items-center border border-stone-200 rounded-lg overflow-hidden">
-                      <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity - 1)
-                        }
-                        className="px-3 py-1 hover:bg-stone-50 transition-colors text-stone-600 text-lg"
-                      >
-                        −
-                      </button>
-                      <span className="px-3 py-1 border-x border-stone-200 text-sm min-w-[2.5rem] text-center">
-                        {item.quantity}
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity + 1)
+                          }
+                          className="px-3 py-1 hover:bg-stone-50 transition-colors text-stone-600 text-lg"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <span className="text-rose-700" style={{ fontFamily: "Georgia, serif" }}>
+                        ${(item.price * item.quantity).toFixed(2)}{" "}
+                        <span className="text-stone-400 text-xs font-sans">USD</span>
                       </span>
-                      <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity + 1)
-                        }
-                        className="px-3 py-1 hover:bg-stone-50 transition-colors text-stone-600 text-lg"
-                      >
-                        +
-                      </button>
                     </div>
-                    <span className="text-rose-700" style={{ fontFamily: "Georgia, serif" }}>
-                      ${(item.price * item.quantity).toFixed(2)}{" "}
-                      <span className="text-stone-400 text-xs font-sans">USD</span>
-                    </span>
                   </div>
-                </div>
-              </div>
-            ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
 
             {/* Clear cart */}
             <button
@@ -200,7 +223,12 @@ export function Carrito() {
           {/* Summary */}
           <div className="space-y-4">
             {/* Coupon */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl p-5 shadow-sm"
+            >
               <div className="flex items-center gap-2 mb-3">
                 <Tag size={16} className="text-rose-400" />
                 <span className="text-sm text-stone-600">Cupón de descuento</span>
@@ -208,7 +236,7 @@ export function Carrito() {
               {couponApplied ? (
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
                   <CheckCircle size={15} />
-                  Cupón FLORENCIA10 aplicado — 10% de descuento
+                  Cupón ANAVICTORIA10 aplicado — 10% de descuento
                 </div>
               ) : (
                 <div className="flex gap-2">
@@ -216,7 +244,7 @@ export function Carrito() {
                     type="text"
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
-                    placeholder="Ej: FLORENCIA10"
+                    placeholder="Ej: ANAVICTORIA10"
                     className="flex-1 border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-rose-400"
                   />
                   <button
@@ -227,29 +255,40 @@ export function Carrito() {
                   </button>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Order summary */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl p-5 shadow-sm"
+            >
               <h3 className="text-stone-800 mb-4">Resumen del pedido</h3>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-stone-600">
                   <span>Subtotal ({itemCount} productos)</span>
-                  <span>${subtotal.toFixed(2)} USD</span>
+                  <span>${total.toFixed(2)} USD</span>
                 </div>
                 {couponApplied && (
-                  <div className="flex justify-between text-emerald-600">
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="flex justify-between text-emerald-600"
+                  >
                     <span>Descuento (10%)</span>
                     <span>−${discount.toFixed(2)} USD</span>
-                  </div>
+                  </motion.div>
                 )}
                 <div className="flex justify-between text-stone-600">
                   <span>Base imponible</span>
-                  <span>${baseImponible.toFixed(2)} USD</span>
+                  <span>${subtotalAfterDiscount.toFixed(2)} USD</span>
                 </div>
                 <div className="flex justify-between text-stone-600">
-                  <span>IVA (15%)</span>
+                  <span className="flex items-center gap-1">
+                    IVA (15%)
+                  </span>
                   <span>${iva.toFixed(2)} USD</span>
                 </div>
                 <div className="flex justify-between text-stone-600">
@@ -267,11 +306,11 @@ export function Carrito() {
                 </div>
                 {shipping > 0 && (
                   <p className="text-xs text-stone-400">
-                    Agrega ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)} USD más para envío gratis
+                    Agrega ${(FREE_SHIPPING_THRESHOLD - total).toFixed(2)} USD más para envío gratis
                   </p>
                 )}
                 <div className="border-t border-stone-100 pt-3 flex justify-between">
-                  <span className="text-stone-800">Total</span>
+                  <span className="text-stone-800 font-medium">Total (IVA incluido)</span>
                   <div className="text-right">
                     <div className="text-rose-700" style={{ fontSize: "1.2rem", fontFamily: "Georgia, serif" }}>
                       ${finalTotal.toFixed(2)}
@@ -283,7 +322,7 @@ export function Carrito() {
 
               <button
                 onClick={() => setOrderPlaced(true)}
-                className="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-colors text-sm"
+                className="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-colors text-sm hover:-translate-y-0.5 hover:shadow-md"
               >
                 Finalizar pedido 🌹
               </button>
@@ -292,7 +331,7 @@ export function Carrito() {
                 <span>💳 Pago seguro</span>
                 <span>🔒 Datos protegidos</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Shipping note */}
             <div className="bg-rose-50 rounded-2xl p-4 text-sm text-stone-600 border border-rose-100">

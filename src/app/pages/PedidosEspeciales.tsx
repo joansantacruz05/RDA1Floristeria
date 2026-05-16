@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { motion } from "motion/react";
-import { img10 } from "../data/localImages";
 import {
   CheckCircle,
   Calendar,
@@ -8,8 +6,11 @@ import {
   MessageCircle,
   Phone,
   Star,
-  Flower2,
 } from "lucide-react";
+import { motion } from "motion/react";
+
+const heroBg =
+  "https://images.unsplash.com/photo-1508610048659-a06b669e3321?auto=format&fit=crop&w=1400&q=80";
 
 const occasions = [
   "Boda",
@@ -87,10 +88,20 @@ export function PedidosEspeciales() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
-        <div className="bg-white rounded-3xl p-12 max-w-md w-full text-center shadow-lg">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 200 }}
+          className="bg-white rounded-3xl p-12 max-w-md w-full text-center shadow-lg"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 250 }}
+            className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
             <CheckCircle size={40} className="text-emerald-500" />
-          </div>
+          </motion.div>
           <h2
             className="text-stone-800 mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}
@@ -122,46 +133,48 @@ export function PedidosEspeciales() {
           >
             Hacer otro pedido
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Hero */}
-      <motion.div
-        className="relative py-16 overflow-hidden"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
+      {/* Hero banner con imagen */}
+      <div className="relative h-72 flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${img10})` }}
+          style={{ backgroundImage: `url(${heroBg})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-900/80 via-rose-800/70 to-stone-900/80" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-amber-900/60 via-rose-900/50 to-stone-900/70" />
+        <div className="relative text-center px-4">
           <motion.div
-            className="text-5xl mb-4"
-            initial={{ scale: 0, rotate: -180 }}
+            initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 100, damping: 10 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="text-5xl mb-4"
           >
             ✨
           </motion.div>
-          <h1
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
             className="text-white mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "2.8rem" }}
           >
-            <Flower2 size={32} className="inline text-rose-200 mr-2 -mt-1" />
             Pedidos Especiales
-          </h1>
-          <p className="text-rose-100 max-w-lg mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-amber-100 max-w-lg mx-auto leading-relaxed"
+          >
             ¿Tienes una idea en mente? Cuéntanos y creamos el arreglo perfecto para tu ocasión especial en Ecuador.
-          </p>
+          </motion.p>
         </div>
-      </motion.div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -229,34 +242,25 @@ export function PedidosEspeciales() {
                 Cuéntanos sobre tu pedido
               </h2>
 
-              {/* Personal info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-stone-700 mb-1">
-                    Nombre completo *
-                  </label>
+                  <label className="block text-sm text-stone-700 mb-1">Nombre completo *</label>
                   <input
                     type="text"
                     required
                     value={form.nombre}
-                    onChange={(e) =>
-                      setForm({ ...form, nombre: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                     placeholder="Tu nombre"
                     className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-stone-700 mb-1">
-                    Teléfono *
-                  </label>
+                  <label className="block text-sm text-stone-700 mb-1">Teléfono *</label>
                   <input
                     type="tel"
                     required
                     value={form.telefono}
-                    onChange={(e) =>
-                      setForm({ ...form, telefono: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, telefono: e.target.value })}
                     placeholder="+593 99 000 0000"
                     className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400 transition-colors"
                   />
@@ -264,9 +268,7 @@ export function PedidosEspeciales() {
               </div>
 
               <div>
-                <label className="block text-sm text-stone-700 mb-1">
-                  Correo electrónico *
-                </label>
+                <label className="block text-sm text-stone-700 mb-1">Correo electrónico *</label>
                 <input
                   type="email"
                   required
@@ -277,32 +279,23 @@ export function PedidosEspeciales() {
                 />
               </div>
 
-              {/* Event info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-stone-700 mb-1">
-                    Ocasión *
-                  </label>
+                  <label className="block text-sm text-stone-700 mb-1">Ocasión *</label>
                   <select
                     required
                     value={form.ocasion}
-                    onChange={(e) =>
-                      setForm({ ...form, ocasion: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, ocasion: e.target.value })}
                     className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400 transition-colors bg-white text-stone-700"
                   >
                     <option value="">Selecciona una ocasión</option>
                     {occasions.map((occ) => (
-                      <option key={occ} value={occ}>
-                        {occ}
-                      </option>
+                      <option key={occ} value={occ}>{occ}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-stone-700 mb-1">
-                    Fecha del evento *
-                  </label>
+                  <label className="block text-sm text-stone-700 mb-1">Fecha del evento *</label>
                   <input
                     type="date"
                     required
@@ -313,19 +306,14 @@ export function PedidosEspeciales() {
                 </div>
               </div>
 
-              {/* Budget */}
               <div>
-                <label className="block text-sm text-stone-700 mb-2">
-                  Presupuesto aproximado (USD)
-                </label>
+                <label className="block text-sm text-stone-700 mb-2">Presupuesto aproximado (USD)</label>
                 <div className="grid grid-cols-2 gap-2">
                   {budgetRanges.map((range) => (
                     <button
                       key={range.value}
                       type="button"
-                      onClick={() =>
-                        setForm({ ...form, presupuesto: range.value })
-                      }
+                      onClick={() => setForm({ ...form, presupuesto: range.value })}
                       className={`text-sm px-4 py-3 rounded-xl border transition-colors text-left ${
                         form.presupuesto === range.value
                           ? "border-rose-500 bg-rose-50 text-rose-700"
@@ -338,11 +326,9 @@ export function PedidosEspeciales() {
                 </div>
               </div>
 
-              {/* Flower types */}
               <div>
                 <label className="block text-sm text-stone-700 mb-2">
-                  Flores preferidas{" "}
-                  <span className="text-stone-400">(puedes elegir varias)</span>
+                  Flores preferidas <span className="text-stone-400">(puedes elegir varias)</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {flowerTypes.map((flower) => (
@@ -362,35 +348,26 @@ export function PedidosEspeciales() {
                 </div>
               </div>
 
-              {/* Color */}
               <div>
                 <label className="block text-sm text-stone-700 mb-1">
-                  Colores preferidos{" "}
-                  <span className="text-stone-400">(opcional)</span>
+                  Colores preferidos <span className="text-stone-400">(opcional)</span>
                 </label>
                 <input
                   type="text"
                   value={form.colorPreferido}
-                  onChange={(e) =>
-                    setForm({ ...form, colorPreferido: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, colorPreferido: e.target.value })}
                   placeholder="ej: tonos pastel, blancos y verdes..."
                   className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400 transition-colors"
                 />
               </div>
 
-              {/* Description */}
               <div>
-                <label className="block text-sm text-stone-700 mb-1">
-                  Descripción de tu pedido *
-                </label>
+                <label className="block text-sm text-stone-700 mb-1">Descripción de tu pedido *</label>
                 <textarea
                   required
                   rows={4}
                   value={form.descripcion}
-                  onChange={(e) =>
-                    setForm({ ...form, descripcion: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
                   placeholder="Cuéntanos lo que necesitas: ¿qué estilo te gusta? ¿para quién es? ¿tienes alguna idea en mente?..."
                   className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400 transition-colors resize-none"
                 />
@@ -398,7 +375,7 @@ export function PedidosEspeciales() {
 
               <button
                 type="submit"
-                className="w-full bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-colors text-sm font-medium shadow-md"
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-all text-sm font-medium shadow-md hover:-translate-y-0.5 hover:shadow-lg"
               >
                 Enviar mi pedido especial ✨
               </button>
