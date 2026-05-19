@@ -2,8 +2,12 @@
 <html>
   <head>
     <script>
-      sessionStorage.redirect = location.href;
+      var path = location.pathname.replace(/^\/RDA1Floristeria\/?/, '');
+      if (path) {
+        location.href = '/RDA1Floristeria/#' + path;
+      } else {
+        location.href = '/RDA1Floristeria/';
+      }
     </script>
-    <meta http-equiv="refresh" content="0;URL='/RDA1Floristeria/'">
   </head>
 </html>

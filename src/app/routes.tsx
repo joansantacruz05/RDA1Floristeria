@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet } from "react-router";
+import { createHashRouter, Link, Outlet } from "react-router";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { WhatsAppButton } from "./components/WhatsAppButton";
@@ -29,14 +29,14 @@ function NotFound() {
       <h1 className="text-stone-700" style={{ fontFamily: "Georgia, serif" }}>
         Página no encontrada
       </h1>
-      <a href="/" className="text-rose-500 hover:text-rose-600 text-sm">
+      <Link to="/" className="text-rose-500 hover:text-rose-600 text-sm">
         Volver al inicio
-      </a>
+      </Link>
     </div>
   );
 }
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: "/",
     Component: Root,
@@ -50,6 +50,4 @@ export const router = createBrowserRouter([
       { path: "*", Component: NotFound },
     ],
   },
-], {
-  basename: "/RDA1Floristeria",
-});
+]);
