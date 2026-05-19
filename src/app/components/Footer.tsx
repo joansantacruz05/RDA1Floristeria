@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Flower2, Instagram, Facebook, MapPin, Phone, Mail, Heart } from "lucide-react";
+import { Flower2, Instagram, Facebook, Phone, Mail, Heart } from "lucide-react";
 
 export function Footer() {
   return (
@@ -61,17 +61,13 @@ export function Footer() {
           <div>
             <h4 className="text-white mb-4">Hablemos</h4>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <MapPin size={15} className="text-rose-400 mt-0.5 shrink-0" />
-                <span>Av. de las Flores N23-45, Quito, Ecuador</span>
-              </li>
               <li className="flex items-center gap-2">
                 <Phone size={15} className="text-rose-400 shrink-0" />
-                <span>+593 99 123 4567</span>
+                <span>+593 99 762 0099</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={15} className="text-rose-400 shrink-0" />
-                <span>hola@anavictoria.ec</span>
+                <span>paola.villamarin@hotmail.com</span>
               </li>
             </ul>
             <div className="mt-4 text-xs text-stone-500">

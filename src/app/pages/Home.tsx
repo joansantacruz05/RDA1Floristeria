@@ -1,15 +1,13 @@
 import { Link } from "react-router";
-import { ArrowRight, Truck, Shield, Clock, Gift, Sparkles } from "lucide-react";
+import { ArrowRight, Truck, Shield, Clock, Gift, Sparkles, Star, Phone, Flower2, HeartHandshake, Church, Heart, GraduationCap, Baby, Sun, Flower } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { products } from "../data/products";
 import { img1, img2, img3, img4, img5, img6, img7, img8, img9, img10 } from "../data/localImages";
 import { motion } from "motion/react";
 
 const heroImage = img4;
-
 const featuredProducts = products.slice(0, 4);
 const galleryGrid = [img1, img2, img3, img4, img5, img6];
-
 const flowerStrip = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10];
 
 const categories = [
@@ -17,28 +15,31 @@ const categories = [
     title: "Ramos de Flores",
     description: "Frescos, bonitos y hechos con cariño",
     link: "/ramos",
-    emoji: "💐",
+    icon: Flower2,
     bg: "bg-rose-50",
     border: "border-rose-200",
     text: "text-rose-600",
+    iconBg: "bg-rose-100",
   },
   {
     title: "Detalles Florales",
     description: "Arreglos especiales para momentos únicos",
     link: "/detalles",
-    emoji: "🌸",
+    icon: Gift,
     bg: "bg-emerald-50",
     border: "border-emerald-200",
     text: "text-emerald-600",
+    iconBg: "bg-emerald-100",
   },
   {
     title: "Pedidos Especiales",
     description: "Creamos el arreglo que imaginas",
     link: "/pedidos-especiales",
-    emoji: "✨",
+    icon: Sparkles,
     bg: "bg-amber-50",
     border: "border-amber-200",
     text: "text-amber-600",
+    iconBg: "bg-amber-100",
   },
 ];
 
@@ -47,6 +48,45 @@ const benefits = [
   { icon: Shield, title: "Flores frescas", desc: "O te devolvemos tu dinero" },
   { icon: Clock, title: "Abierto 7 días", desc: "Incluyendo domingos y festivos" },
   { icon: Gift, title: "Envoltorio bonito", desc: "Sin costo adicional" },
+];
+
+const occasions = [
+  { icon: Gift, label: "Cumpleaños", link: "/detalles?tag=cumpleaños", color: "text-rose-500", bg: "bg-rose-100" },
+  { icon: Heart, label: "Aniversario", link: "/ramos?tag=aniversario", color: "text-red-500", bg: "bg-red-100" },
+  { icon: Church, label: "Bodas", link: "/detalles?tag=bodas", color: "text-stone-600", bg: "bg-stone-100" },
+  { icon: HeartHandshake, label: "San Valentín", link: "/ramos?tag=romántico", color: "text-pink-500", bg: "bg-pink-100" },
+  { icon: GraduationCap, label: "Graduación", link: "/ramos?tag=regalo", color: "text-amber-600", bg: "bg-amber-100" },
+  { icon: Baby, label: "Baby Shower", link: "/detalles?tag=cumpleaños", color: "text-sky-500", bg: "bg-sky-100" },
+  { icon: Sun, label: "Día de la Madre", link: "/ramos", color: "text-orange-500", bg: "bg-orange-100" },
+  { icon: Flower, label: "Condolencias", link: "/ramos?tag=blanco", color: "text-emerald-600", bg: "bg-emerald-100" },
+];
+
+const deliveryZones = [
+  { zone: "Norte de Quito", time: "2–3 horas", areas: "La Carolina, El Condado, Cotocollao" },
+  { zone: "Centro Histórico", time: "1–2 horas", areas: "La Mariscal, San Blas, La Floresta" },
+  { zone: "Sur de Quito", time: "2–4 horas", areas: "Solanda, Chillogallo, La Magdalena" },
+  { zone: "Cumbayá / Tumbaco", time: "3–4 horas", areas: "Cumbayá, Tumbaco, Puembo" },
+];
+
+const testimonials = [
+  {
+    name: "Daniela M.",
+    text: "Pedí un ramo para el cumpleaños de mi mamá y llegó puntualísimo, fresquísimo y más hermoso que en la foto. Volvería a pedir mil veces.",
+    rating: 5,
+    location: "Quito Norte",
+  },
+  {
+    name: "Santiago R.",
+    text: "Sorprendí a mi novia con el combo de rosas y globos corazón. Quedó encantada. El servicio es excelente y muy rápido el WhatsApp.",
+    rating: 5,
+    location: "Cumbayá",
+  },
+  {
+    name: "Valentina C.",
+    text: "Contraté el arreglo de bodas y superaron todas mis expectativas. Los lirios blancos eran perfectos. 100% recomendados.",
+    rating: 5,
+    location: "Centro Histórico",
+  },
 ];
 
 const fadeUp = {
@@ -61,6 +101,7 @@ const fadeUp = {
 export function Home() {
   return (
     <div className="min-h-screen">
+
       {/* HERO */}
       <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden">
         <div
@@ -127,6 +168,18 @@ export function Home() {
         </div>
       </section>
 
+      {/* PROMO BANNER */}
+      <section className="bg-amber-400 py-3 text-center">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-amber-900 text-sm font-medium tracking-wide"
+        >
+          🚚 Envío GRATIS en pedidos mayores a $40 · Solo en Quito y área metropolitana
+        </motion.p>
+      </section>
+
       {/* BENEFITS BAR */}
       <section className="bg-gradient-to-r from-rose-700 to-rose-600 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -154,8 +207,64 @@ export function Home() {
         </div>
       </section>
 
+      {/* OCCASIONS */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              className="text-rose-600 text-sm tracking-wide uppercase font-medium mb-2"
+            >
+              Encuentra el arreglo ideal
+            </motion.p>
+            <motion.h2
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={1}
+              className="text-stone-800"
+              style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
+            >
+              ¿Para qué ocasión es?
+            </motion.h2>
+          </div>
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-4">
+            {occasions.map((occ, i) => (
+              <motion.div
+                key={occ.label}
+                custom={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+              >
+                <Link
+                  to={occ.link}
+                  className="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-rose-50 transition-colors text-center"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.15, rotate: 6 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className={`w-12 h-12 sm:w-14 sm:h-14 ${occ.bg} rounded-2xl flex items-center justify-center`}
+                  >
+                    <occ.icon size={24} className={occ.color} />
+                  </motion.div>
+                  <span className="text-xs sm:text-sm text-stone-600 group-hover:text-rose-600 transition-colors font-medium leading-tight">
+                    {occ.label}
+                  </span>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FLOWER IMAGE STRIP */}
-      <section className="py-12 bg-white overflow-hidden">
+      <section className="py-12 bg-stone-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
           <motion.p
             initial="hidden"
@@ -200,7 +309,7 @@ export function Home() {
       </section>
 
       {/* CATEGORIES */}
-      <section className="py-20 bg-stone-50">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <motion.h2
@@ -239,11 +348,11 @@ export function Home() {
                   className={`group block ${cat.bg} rounded-2xl p-8 border ${cat.border} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
                 >
                   <motion.div
-                    className="text-5xl mb-4"
-                    whileHover={{ scale: 1.2, rotate: 10 }}
+                    className={`w-14 h-14 ${cat.iconBg} rounded-2xl flex items-center justify-center mb-4`}
+                    whileHover={{ scale: 1.15, rotate: 8 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    {cat.emoji}
+                    <cat.icon size={28} className={cat.text} />
                   </motion.div>
                   <h3 className="text-stone-800 mb-2">{cat.title}</h3>
                   <p className="text-stone-600 text-sm mb-4">{cat.description}</p>
@@ -258,7 +367,7 @@ export function Home() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-10">
             <motion.div
@@ -301,7 +410,85 @@ export function Home() {
         </div>
       </section>
 
-      {/* GALERÍA DE FOTOS REALES */}
+      {/* DELIVERY ZONES */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              className="text-rose-600 text-sm tracking-wide uppercase font-medium mb-2"
+            >
+              Cobertura de entrega
+            </motion.p>
+            <motion.h2
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={1}
+              className="text-stone-800"
+              style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
+            >
+              Llegamos a toda Quito
+            </motion.h2>
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={2}
+              className="text-stone-500 mt-2"
+            >
+              Pedidos antes de las 12:00 pm se entregan el mismo día
+            </motion.p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {deliveryZones.map((zone, i) => (
+              <motion.div
+                key={zone.zone}
+                custom={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                className="bg-stone-50 rounded-2xl p-5 border border-stone-100 hover:border-rose-200 hover:bg-rose-50/30 transition-colors"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Truck size={15} className="text-rose-500 shrink-0" />
+                  <span className="text-stone-800 font-medium text-sm">{zone.zone}</span>
+                </div>
+                <div className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full mb-2">
+                  <Clock size={11} />
+                  {zone.time}
+                </div>
+                <p className="text-xs text-stone-500 leading-relaxed">{zone.areas}</p>
+              </motion.div>
+            ))}
+          </div>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            className="mt-6 text-center"
+          >
+            <a
+              href="https://wa.me/593997620099?text=Hola! Quiero saber si hacen entregas en mi zona."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-rose-600 transition-colors"
+            >
+              <Phone size={14} />
+              ¿Tu zona no aparece? Escríbenos y lo confirmamos
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* GALLERY */}
       <section className="py-20 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -330,16 +517,12 @@ export function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.4 }}
-                className={`overflow-hidden rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 ${
-                  i === 0 ? "md:row-span-2" : ""
-                }`}
+                className={`overflow-hidden rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 ${i === 0 ? "md:row-span-2" : ""}`}
               >
                 <img
                   src={img}
                   alt={`AnaVictoria - arreglo ${i + 1}`}
-                  className={`w-full object-cover hover:scale-105 transition-transform duration-500 ${
-                    i === 0 ? "h-64 md:h-full" : "h-48 md:h-52"
-                  }`}
+                  className={`w-full object-cover hover:scale-105 transition-transform duration-500 ${i === 0 ? "h-64 md:h-full" : "h-48 md:h-52"}`}
                 />
               </motion.div>
             ))}
@@ -351,6 +534,65 @@ export function Home() {
             >
               Ver todos nuestros arreglos <ArrowRight size={16} />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              className="text-rose-600 text-sm tracking-wide uppercase font-medium mb-2"
+            >
+              Lo que dicen nuestros clientes
+            </motion.p>
+            <motion.h2
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={1}
+              className="text-stone-800"
+              style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
+            >
+              Miles de sonrisas entregadas 🌸
+            </motion.h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={t.name}
+                custom={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                className="bg-stone-50 rounded-2xl p-6 border border-stone-100"
+              >
+                <div className="flex gap-1 mb-3">
+                  {Array.from({ length: t.rating }).map((_, j) => (
+                    <Star key={j} size={14} fill="#f43f5e" className="text-rose-500" />
+                  ))}
+                </div>
+                <p className="text-stone-600 text-sm leading-relaxed mb-4 italic">
+                  "{t.text}"
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 text-xs font-bold">
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <p className="text-stone-800 text-sm font-medium">{t.name}</p>
+                    <p className="text-stone-400 text-xs">{t.location}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -392,7 +634,7 @@ export function Home() {
                 AnaVictoria nació con la pasión de llevar alegría a través de las flores. Hoy somos un equipo pequeño pero con mucho corazón, trabajando cada día desde Quito para traer alegría a través de las flores.
               </p>
               <p className="text-stone-600 leading-relaxed mb-6">
-                Ecuador es uno de los mayores productores de flores del mundo, y nosotros trabajamos directamente con los cultivadores locales para que cada flor llegue fresquísima a tu puerta. Porque sabemos que detrás de cada pedido hay una emoción, un mensaje, un momento importante.
+                Ecuador es uno de los mayores productores de flores del mundo, y nosotros trabajamos directamente con los cultivadores locales para que cada flor llegue fresquísima a tu puerta.
               </p>
               <Link
                 to="/pedidos-especiales"

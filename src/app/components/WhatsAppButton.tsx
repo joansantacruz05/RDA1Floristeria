@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { X, MessageCircle } from "lucide-react";
 
-const WHATSAPP_NUMBER = "593991234567";
+const WHATSAPP_NUMBER = "593997620099";
 const WHATSAPP_MESSAGE = "¡Hola! Me gustaría hacer un pedido de flores 🌸";
 
 export function WhatsAppButton() {
@@ -35,7 +35,7 @@ export function WhatsAppButton() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-stone-800">AnaVictoria</p>
-                  <p className="text-xs text-green-500">● En línea</p>
+                  <p className="text-xs text-green-500"></p>
                 </div>
               </div>
               <button

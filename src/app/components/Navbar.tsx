@@ -24,7 +24,7 @@ export function Navbar() {
       <div className="bg-gradient-to-r from-rose-700 to-rose-600 text-white text-center py-2 text-sm">
         <span className="flex items-center justify-center gap-2">
           <Phone size={13} />
-          ¿Necesitas ayuda? Escríbenos al: +593 99 123 4567 · Quito, Ecuador
+          ¿Necesitas ayuda? Escríbenos al: +593 99 762 0099 · Quito, Ecuador
         </span>
       </div>
 

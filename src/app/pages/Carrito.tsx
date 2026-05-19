@@ -5,8 +5,11 @@ import {
   ShoppingBag,
   ArrowLeft,
   Truck,
-  Tag,
   CheckCircle,
+  Copy,
+  MessageCircle,
+  Landmark,
+  ShoppingCart,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -15,56 +18,121 @@ const FREE_SHIPPING_THRESHOLD = 40;
 const SHIPPING_COST = 3.50;
 const IVA_RATE = 0.15;
 
+const BANK_INFO = {
+  banco: "Banco Pichincha",
+  tipo: "Cuenta de Ahorros",
+  numero: "2205678901",
+  titular: "AnaVictoria Flores S.A.S.",
+  ci: "1792345678001",
+  email: "paola.villamarin@hotmail.com",
+};
+
 export function Carrito() {
   const { items, removeFromCart, updateQuantity, clearCart, total, itemCount } =
     useCart();
-  const [coupon, setCoupon] = useState("");
-  const [couponApplied, setCouponApplied] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const discount = couponApplied ? Math.round(total * 0.1 * 100) / 100 : 0;
-  const subtotalAfterDiscount = total - discount;
-  const iva = Math.round(subtotalAfterDiscount * IVA_RATE * 100) / 100;
+  const iva = Math.round(total * IVA_RATE * 100) / 100;
   const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const finalTotal = subtotalAfterDiscount + iva + shipping;
+  const finalTotal = total + iva + shipping;
 
-  const applyCoupon = () => {
-    if (coupon.toUpperCase() === "ANAVICTORIA10") {
-      setCouponApplied(true);
-    }
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(field);
+    setTimeout(() => setCopied(null), 2000);
   };
+
+  const whatsappText = encodeURIComponent(
+    `Hola AnaVictoria! Acabo de realizar una transferencia por $${finalTotal.toFixed(2)} USD para mi pedido. Te envío el comprobante. 🌹`
+  );
 
   if (orderPlaced) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4 py-12">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 200 }}
-          className="bg-white rounded-3xl p-12 max-w-md w-full text-center shadow-sm"
+          className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-sm"
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 250 }}
-            className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6"
+            transition={{ delay: 0.15, type: "spring", stiffness: 260 }}
+            className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5"
           >
-            <CheckCircle size={40} className="text-emerald-500" />
+            <CheckCircle size={34} className="text-emerald-500" />
           </motion.div>
           <h2
-            className="text-stone-800 mb-3"
-            style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}
+            className="text-stone-800 mb-2 text-center"
+            style={{ fontFamily: "Georgia, serif", fontSize: "1.7rem" }}
           >
-            ¡Pedido confirmado!
+            ¡Pedido recibido!
           </h2>
-          <p className="text-stone-500 leading-relaxed mb-6">
-            Tu pedido ha sido recibido. Pronto recibirás un mensaje de
-            confirmación con los detalles de tu entrega en Quito.
+          <p className="text-stone-500 text-sm text-center mb-6">
+            Para confirmar tu pedido realiza la transferencia por{" "}
+            <strong className="text-rose-600">${finalTotal.toFixed(2)} USD</strong>{" "}
+            a la siguiente cuenta y envíanos el comprobante por WhatsApp.
           </p>
-          <p className="text-rose-500 text-2xl mb-6">🌹</p>
+
+          {/* Bank details */}
+          <div className="bg-stone-50 rounded-2xl p-5 mb-5 space-y-3 border border-stone-100">
+            <h3
+              className="text-stone-700 mb-3 flex items-center gap-2"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              <Landmark size={18} className="text-rose-500" /> Datos para la transferencia
+            </h3>
+            {[
+              { label: "Banco", value: BANK_INFO.banco },
+              { label: "Tipo de cuenta", value: BANK_INFO.tipo },
+              { label: "Número de cuenta", value: BANK_INFO.numero, copyable: true },
+              { label: "Titular", value: BANK_INFO.titular },
+              { label: "RUC", value: BANK_INFO.ci, copyable: true },
+              { label: "Monto exacto", value: `$${finalTotal.toFixed(2)} USD`, highlight: true },
+            ].map((row) => (
+              <div key={row.label} className="flex items-center justify-between text-sm">
+                <span className="text-stone-500 w-36 shrink-0">{row.label}</span>
+                <div className="flex items-center gap-2">
+                  <span className={`font-medium ${row.highlight ? "text-rose-600 text-base" : "text-stone-800"}`}>
+                    {row.value}
+                  </span>
+                  {row.copyable && (
+                    <button
+                      onClick={() => copyToClipboard(row.value, row.label)}
+                      className="text-stone-400 hover:text-rose-500 transition-colors"
+                      title="Copiar"
+                    >
+                      {copied === row.label ? (
+                        <CheckCircle size={14} className="text-emerald-500" />
+                      ) : (
+                        <Copy size={14} />
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* WhatsApp CTA */}
+          <a
+            href={`https://wa.me/593997620099?text=${whatsappText}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl transition-colors text-sm font-medium mb-3 shadow-md hover:-translate-y-0.5"
+          >
+            <MessageCircle size={18} />
+            Enviar comprobante por WhatsApp
+          </a>
+          <p className="text-xs text-stone-400 text-center mb-5">
+            Tu pedido se confirma al recibir el comprobante de pago ✅
+          </p>
+
           <Link
             to="/"
-            className="bg-rose-600 hover:bg-rose-700 text-white px-8 py-3 rounded-full transition-colors text-sm inline-block"
+            className="w-full flex items-center justify-center gap-2 border border-stone-200 text-stone-600 hover:bg-stone-50 py-3 rounded-xl transition-colors text-sm"
           >
             Seguir comprando
           </Link>
@@ -81,7 +149,9 @@ export function Carrito() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-sm"
         >
-          <div className="text-7xl mb-6">🛒</div>
+          <div className="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShoppingCart size={44} className="text-rose-400" />
+          </div>
           <h2
             className="text-stone-800 mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}
@@ -179,12 +249,9 @@ export function Carrito() {
                       {item.description}
                     </p>
                     <div className="flex items-center justify-between mt-3">
-                      {/* Quantity controls */}
                       <div className="flex items-center border border-stone-200 rounded-lg overflow-hidden">
                         <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           className="px-3 py-1 hover:bg-stone-50 transition-colors text-stone-600 text-lg"
                         >
                           −
@@ -193,9 +260,7 @@ export function Carrito() {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           className="px-3 py-1 hover:bg-stone-50 transition-colors text-stone-600 text-lg"
                         >
                           +
@@ -211,7 +276,6 @@ export function Carrito() {
               ))}
             </AnimatePresence>
 
-            {/* Clear cart */}
             <button
               onClick={clearCart}
               className="text-sm text-stone-400 hover:text-red-500 transition-colors flex items-center gap-1"
@@ -222,73 +286,24 @@ export function Carrito() {
 
           {/* Summary */}
           <div className="space-y-4">
-            {/* Coupon */}
+            {/* Order summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="bg-white rounded-2xl p-5 shadow-sm"
             >
-              <div className="flex items-center gap-2 mb-3">
-                <Tag size={16} className="text-rose-400" />
-                <span className="text-sm text-stone-600">Cupón de descuento</span>
-              </div>
-              {couponApplied ? (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
-                  <CheckCircle size={15} />
-                  Cupón ANAVICTORIA10 aplicado — 10% de descuento
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                    placeholder="Ej: ANAVICTORIA10"
-                    className="flex-1 border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-rose-400"
-                  />
-                  <button
-                    onClick={applyCoupon}
-                    className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm transition-colors"
-                  >
-                    Aplicar
-                  </button>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Order summary */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl p-5 shadow-sm"
-            >
-              <h3 className="text-stone-800 mb-4">Resumen del pedido</h3>
+              <h3 className="text-stone-800 mb-4" style={{ fontFamily: "Georgia, serif" }}>
+                Resumen del pedido
+              </h3>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-stone-600">
                   <span>Subtotal ({itemCount} productos)</span>
                   <span>${total.toFixed(2)} USD</span>
                 </div>
-                {couponApplied && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="flex justify-between text-emerald-600"
-                  >
-                    <span>Descuento (10%)</span>
-                    <span>−${discount.toFixed(2)} USD</span>
-                  </motion.div>
-                )}
                 <div className="flex justify-between text-stone-600">
-                  <span>Base imponible</span>
-                  <span>${subtotalAfterDiscount.toFixed(2)} USD</span>
-                </div>
-                <div className="flex justify-between text-stone-600">
-                  <span className="flex items-center gap-1">
-                    IVA (15%)
-                  </span>
+                  <span>IVA (15%)</span>
                   <span>${iva.toFixed(2)} USD</span>
                 </div>
                 <div className="flex justify-between text-stone-600">
@@ -298,15 +313,15 @@ export function Carrito() {
                   </span>
                   <span>
                     {shipping === 0 ? (
-                      <span className="text-emerald-600">Gratis</span>
+                      <span className="text-emerald-600">Gratis 🎉</span>
                     ) : (
                       `$${shipping.toFixed(2)} USD`
                     )}
                   </span>
                 </div>
                 {shipping > 0 && (
-                  <p className="text-xs text-stone-400">
-                    Agrega ${(FREE_SHIPPING_THRESHOLD - total).toFixed(2)} USD más para envío gratis
+                  <p className="text-xs text-stone-400 bg-rose-50 rounded-lg p-2">
+                    Agrega <strong>${(FREE_SHIPPING_THRESHOLD - total).toFixed(2)} USD</strong> más para envío gratis
                   </p>
                 )}
                 <div className="border-t border-stone-100 pt-3 flex justify-between">
@@ -322,14 +337,25 @@ export function Carrito() {
 
               <button
                 onClick={() => setOrderPlaced(true)}
-                className="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-colors text-sm hover:-translate-y-0.5 hover:shadow-md"
+                className="w-full mt-5 bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-all text-sm font-medium hover:-translate-y-0.5 hover:shadow-lg shadow-md"
               >
-                Finalizar pedido 🌹
+                Confirmar y ver datos de pago 🌹
               </button>
+            </motion.div>
 
-              <div className="mt-4 flex items-center justify-center gap-4 text-xs text-stone-400">
-                <span>💳 Pago seguro</span>
-                <span>🔒 Datos protegidos</span>
+            {/* Payment method */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="bg-white rounded-2xl p-5 shadow-sm border border-stone-100"
+            >
+              <h4 className="text-stone-700 text-sm font-medium mb-3 flex items-center gap-2">
+                🏦 Método de pago
+              </h4>
+              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-stone-600 leading-relaxed">
+                <p className="font-medium text-amber-700 mb-1">Transferencia bancaria</p>
+                <p>Al confirmar tu pedido te mostraremos los datos bancarios. Luego envías el comprobante por WhatsApp y listo.</p>
               </div>
             </motion.div>
 
@@ -338,7 +364,7 @@ export function Carrito() {
               <div className="flex items-start gap-2">
                 <Truck size={16} className="text-rose-400 mt-0.5 shrink-0" />
                 <p>
-                  Entregas el mismo día para pedidos realizados antes de las{" "}
+                  Entregas el mismo día para pedidos antes de las{" "}
                   <strong>12:00 pm</strong> en Quito y área metropolitana.
                 </p>
               </div>
