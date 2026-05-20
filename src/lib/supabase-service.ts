@@ -3,6 +3,11 @@ import { products as localProducts } from "@/app/data/products";
 import type { Product } from "@/app/data/products";
 
 export async function fetchProducts(): Promise<Product[]> {
+  if (!supabase) {
+    console.warn("Supabase no configurado, usando productos locales");
+    return localProducts;
+  }
+
   const { data, error } = await supabase
     .from("productos")
     .select("*")
@@ -43,6 +48,10 @@ export async function submitOrder(data: {
   notas?: string;
   direccion_entrega?: string;
 }) {
+  if (!supabase) {
+    console.warn("Supabase no configurado, pedido no guardado");
+    return;
+  }
   const { error } = await supabase.from("pedidos").insert(data);
   if (error) throw new Error(error.message);
 }
@@ -58,6 +67,10 @@ export async function submitSpecialOrder(data: {
   colores?: string;
   descripcion: string;
 }) {
+  if (!supabase) {
+    console.warn("Supabase no configurado, pedido especial no guardado");
+    return;
+  }
   const { error } = await supabase.from("pedidos_especiales").insert({
     ...data,
     estado: "pendiente",
