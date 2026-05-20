@@ -8,6 +8,7 @@ import {
   Star,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { submitSpecialOrder } from "@/lib/supabase-service";
 
 const heroBg =
   "https://images.unsplash.com/photo-1508610048659-a06b669e3321?auto=format&fit=crop&w=1400&q=80";
@@ -80,9 +81,24 @@ export function PedidosEspeciales() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    try {
+      await submitSpecialOrder({
+        nombre_contacto: form.nombre,
+        email_contacto: form.email,
+        telefono_contacto: form.telefono,
+        ocasion: form.ocasion,
+        fecha_evento: form.fecha,
+        presupuesto: form.presupuesto,
+        flores_preferidas: form.flores,
+        colores: form.colorPreferido,
+        descripcion: form.descripcion,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Error al enviar pedido especial:", err);
+    }
   };
 
   if (submitted) {

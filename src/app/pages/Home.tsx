@@ -1,12 +1,11 @@
 import { Link } from "react-router";
 import { ArrowRight, Truck, Shield, Clock, Gift, Sparkles, Star, Phone, Flower2, HeartHandshake, Church, Heart, GraduationCap, Baby, Sun, Flower } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
-import { products } from "../data/products";
+import { useSupabaseProducts } from "../context/SupabaseContext";
 import { img1, img2, img3, img4, img5, img6, img7, img8, img9, img10 } from "../data/localImages";
 import { motion } from "motion/react";
 
 const heroImage = img4;
-const featuredProducts = products.slice(0, 4);
 const galleryGrid = [img1, img2, img3, img4, img5, img6];
 const flowerStrip = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10];
 
@@ -99,6 +98,9 @@ const fadeUp = {
 };
 
 export function Home() {
+  const { products } = useSupabaseProducts();
+  const featuredProducts = products.slice(0, 4);
+
   return (
     <div className="min-h-screen">
 

@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { products } from "../data/products";
+import { useSupabaseProducts } from "../context/SupabaseContext";
 import { ProductCard } from "../components/ProductCard";
 import { SlidersHorizontal, Gift, Truck, Flower2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-
-const detallesProducts = products.filter((p) => p.category === "detalles");
 
 const sortOptions = [
   { value: "default", label: "Relevancia" },
@@ -19,8 +17,11 @@ const heroBg =
   "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=1400&q=80";
 
 export function Detalles() {
+  const { products } = useSupabaseProducts();
   const [sort, setSort] = useState("default");
   const [occasion, setOccasion] = useState("Todos");
+
+  const detallesProducts = products.filter((p) => p.category === "detalles");
 
   const filteredProducts =
     occasion === "Todos"

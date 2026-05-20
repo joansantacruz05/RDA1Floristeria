@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useCart } from "../context/CartContext";
+import { submitOrder } from "@/lib/supabase-service";
 import {
   Trash2,
   ShoppingBag,
@@ -336,7 +337,14 @@ export function Carrito() {
               </div>
 
               <button
-                onClick={() => setOrderPlaced(true)}
+                onClick={async () => {
+                  try {
+                    await submitOrder({ total: finalTotal, estado: "pendiente" });
+                  } catch (err) {
+                    console.error("Error al guardar pedido:", err);
+                  }
+                  setOrderPlaced(true);
+                }}
                 className="w-full mt-5 bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-all text-sm font-medium hover:-translate-y-0.5 hover:shadow-lg shadow-md"
               >
                 Confirmar y ver datos de pago 🌹

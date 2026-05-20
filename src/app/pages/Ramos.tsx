@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { products } from "../data/products";
+import { useSupabaseProducts } from "../context/SupabaseContext";
 import { ProductCard } from "../components/ProductCard";
 import { SlidersHorizontal, Flower2, Droplets, Thermometer, Scissors } from "lucide-react";
 import { motion } from "motion/react";
-
-const ramoProducts = products.filter((p) => p.category === "ramos");
 
 const sortOptions = [
   { value: "default", label: "Relevancia" },
@@ -17,7 +15,10 @@ const heroBg =
   "https://images.unsplash.com/photo-1490750967868-88df5691cc5c?auto=format&fit=crop&w=1400&q=80";
 
 export function Ramos() {
+  const { products } = useSupabaseProducts();
   const [sort, setSort] = useState("default");
+
+  const ramoProducts = products.filter((p) => p.category === "ramos");
 
   const sortedProducts = [...ramoProducts].sort((a, b) => {
     if (sort === "price-asc") return a.price - b.price;
