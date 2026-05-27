@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useCart } from "../context/CartContext";
-import { submitOrder } from "@/lib/supabase-service";
+import { useAuth } from "../context/AuthContext";
 import {
   Trash2,
   ShoppingBag,
@@ -9,8 +9,7 @@ import {
   CheckCircle,
   Copy,
   MessageCircle,
-  Landmark,
-  ShoppingCart,
+  LogIn,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -25,12 +24,13 @@ const BANK_INFO = {
   numero: "2205678901",
   titular: "AnaVictoria Flores S.A.S.",
   ci: "1792345678001",
-  email: "paola.villamarin@hotmail.com",
+  email: "pagos@anavictoria.ec",
 };
 
 export function Carrito() {
   const { items, removeFromCart, updateQuantity, clearCart, total, itemCount } =
     useCart();
+  const { user, saveOrder } = useAuth();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -83,7 +83,7 @@ export function Carrito() {
               className="text-stone-700 mb-3 flex items-center gap-2"
               style={{ fontFamily: "Georgia, serif" }}
             >
-              <Landmark size={18} className="text-rose-500" /> Datos para la transferencia
+              🏦 Datos para la transferencia
             </h3>
             {[
               { label: "Banco", value: BANK_INFO.banco },
@@ -119,7 +119,7 @@ export function Carrito() {
 
           {/* WhatsApp CTA */}
           <a
-            href={`https://wa.me/593997620099?text=${whatsappText}`}
+            href={`https://wa.me/593991234567?text=${whatsappText}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl transition-colors text-sm font-medium mb-3 shadow-md hover:-translate-y-0.5"
@@ -150,9 +150,7 @@ export function Carrito() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-sm"
         >
-          <div className="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <ShoppingCart size={44} className="text-rose-400" />
-          </div>
+          <div className="text-7xl mb-6">🛒</div>
           <h2
             className="text-stone-800 mb-3"
             style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}
@@ -337,11 +335,18 @@ export function Carrito() {
               </div>
 
               <button
-                onClick={async () => {
-                  try {
-                    await submitOrder({ total: finalTotal, estado: "pendiente" });
-                  } catch (err) {
-                    console.error("Error al guardar pedido:", err);
+                onClick={() => {
+                  if (user) {
+                    saveOrder({
+                      items: items.map((item) => ({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        image: item.image,
+                      })),
+                      total: finalTotal,
+                    });
                   }
                   setOrderPlaced(true);
                 }}

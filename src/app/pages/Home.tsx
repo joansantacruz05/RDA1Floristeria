@@ -1,44 +1,59 @@
 import { Link } from "react-router";
-import { ArrowRight, Truck, Shield, Clock, Gift, Sparkles, Star, Phone, Flower2, HeartHandshake, Church, Heart, GraduationCap, Baby, Sun, Flower } from "lucide-react";
+import { ArrowRight, Truck, Shield, Clock, Gift, Sparkles, MapPin, Star, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
-import { useSupabaseProducts } from "../context/SupabaseContext";
+import { products } from "../data/products";
 import { img1, img2, img3, img4, img5, img6, img7, img8, img9, img10 } from "../data/localImages";
-import { motion } from "motion/react";
+import {
+  pRosasRosadas, pGirasoles, pPrimaveral, pTulipanes, pPeonias,
+  pLavanda, pLiriosBlancos, pRosasBlancas, pRosasAmarillas, pRosasFucsia,
+} from "../data/localImages";
+import { motion, AnimatePresence } from "motion/react";
+import { useState, useEffect, useCallback } from "react";
 
-const heroImage = img4;
+const heroImage = pRosasRosadas;
+const featuredProducts = products.slice(0, 4);
 const galleryGrid = [img1, img2, img3, img4, img5, img6];
-const flowerStrip = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10];
+
+const carouselSlides = [
+  { img: pRosasRosadas, name: "Ramo Rosas Rosadas", price: "$15.00" },
+  { img: pGirasoles, name: "Ramo de Girasoles", price: "$12.00" },
+  { img: pPrimaveral, name: "Ramo Primaveral Mixto", price: "$18.00" },
+  { img: pTulipanes, name: "Ramo de Tulipanes", price: "$16.00" },
+  { img: pPeonias, name: "Ramo de Peonías", price: "$28.00" },
+  { img: pLavanda, name: "Lavanda y Eucalipto", price: "$13.00" },
+  { img: pLiriosBlancos, name: "Ramo Lirios Blancos", price: "$19.00" },
+  { img: pRosasBlancas, name: "Ramo Rosas Blancas", price: "$24.00" },
+  { img: pRosasAmarillas, name: "Rosas Amarillas Amistad", price: "$17.00" },
+  { img: pRosasFucsia, name: "Rosas Fucsia Pasión", price: "$22.00" },
+];
 
 const categories = [
   {
     title: "Ramos de Flores",
     description: "Frescos, bonitos y hechos con cariño",
     link: "/ramos",
-    icon: Flower2,
+    emoji: "💐",
     bg: "bg-rose-50",
     border: "border-rose-200",
     text: "text-rose-600",
-    iconBg: "bg-rose-100",
   },
   {
     title: "Detalles Florales",
     description: "Arreglos especiales para momentos únicos",
     link: "/detalles",
-    icon: Gift,
+    emoji: "🌸",
     bg: "bg-emerald-50",
     border: "border-emerald-200",
     text: "text-emerald-600",
-    iconBg: "bg-emerald-100",
   },
   {
     title: "Pedidos Especiales",
     description: "Creamos el arreglo que imaginas",
     link: "/pedidos-especiales",
-    icon: Sparkles,
+    emoji: "✨",
     bg: "bg-amber-50",
     border: "border-amber-200",
     text: "text-amber-600",
-    iconBg: "bg-amber-100",
   },
 ];
 
@@ -50,14 +65,14 @@ const benefits = [
 ];
 
 const occasions = [
-  { icon: Gift, label: "Cumpleaños", link: "/detalles?tag=cumpleaños", color: "text-rose-500", bg: "bg-rose-100" },
-  { icon: Heart, label: "Aniversario", link: "/ramos?tag=aniversario", color: "text-red-500", bg: "bg-red-100" },
-  { icon: Church, label: "Bodas", link: "/detalles?tag=bodas", color: "text-stone-600", bg: "bg-stone-100" },
-  { icon: HeartHandshake, label: "San Valentín", link: "/ramos?tag=romántico", color: "text-pink-500", bg: "bg-pink-100" },
-  { icon: GraduationCap, label: "Graduación", link: "/ramos?tag=regalo", color: "text-amber-600", bg: "bg-amber-100" },
-  { icon: Baby, label: "Baby Shower", link: "/detalles?tag=cumpleaños", color: "text-sky-500", bg: "bg-sky-100" },
-  { icon: Sun, label: "Día de la Madre", link: "/ramos", color: "text-orange-500", bg: "bg-orange-100" },
-  { icon: Flower, label: "Condolencias", link: "/ramos?tag=blanco", color: "text-emerald-600", bg: "bg-emerald-100" },
+  { emoji: "🎂", label: "Cumpleaños", link: "/detalles?tag=cumpleaños" },
+  { emoji: "💍", label: "Aniversario", link: "/ramos?tag=aniversario" },
+  { emoji: "💒", label: "Bodas", link: "/detalles?tag=bodas" },
+  { emoji: "❤️", label: "San Valentín", link: "/ramos?tag=romántico" },
+  { emoji: "🎓", label: "Graduación", link: "/ramos?tag=regalo" },
+  { emoji: "👶", label: "Baby Shower", link: "/detalles?tag=cumpleaños" },
+  { emoji: "🌟", label: "Día de la Madre", link: "/ramos" },
+  { emoji: "🙏", label: "Condolencias", link: "/ramos?tag=blanco" },
 ];
 
 const deliveryZones = [
@@ -97,10 +112,91 @@ const fadeUp = {
   }),
 };
 
-export function Home() {
-  const { products } = useSupabaseProducts();
-  const featuredProducts = products.slice(0, 4);
+function FlowerCarousel() {
+  const [current, setCurrent] = useState(0);
+  const total = carouselSlides.length;
 
+  const next = useCallback(() => setCurrent((c) => (c + 1) % total), [total]);
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + total) % total), [total]);
+
+  useEffect(() => {
+    const t = setInterval(next, 3200);
+    return () => clearInterval(t);
+  }, [next]);
+
+  const visibleCount = 4;
+  const getVisible = () => {
+    const slides = [];
+    for (let i = 0; i < visibleCount; i++) {
+      slides.push(carouselSlides[(current + i) % total]);
+    }
+    return slides;
+  };
+
+  return (
+    <div className="relative">
+      <div className="overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+          >
+            {getVisible().map((slide, i) => (
+              <Link to="/ramos" key={i} className="group">
+                <div className="rounded-2xl overflow-hidden aspect-square shadow-md hover:shadow-xl transition-shadow bg-white border border-stone-100">
+                  <img
+                    src={slide.img}
+                    alt={slide.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="mt-2.5 px-1">
+                  <p className="text-sm font-medium text-stone-700 line-clamp-1">{slide.name}</p>
+                  <p className="text-rose-600 text-sm" style={{ fontFamily: "Georgia, serif" }}>{slide.price}</p>
+                </div>
+              </Link>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center justify-between mt-6">
+        <div className="flex gap-2">
+          {carouselSlides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-1.5 rounded-full transition-all ${
+                i === current ? "w-6 bg-rose-500" : "w-1.5 bg-stone-300"
+              }`}
+            />
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={prev}
+            className="w-9 h-9 rounded-full border border-stone-200 flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 transition-colors"
+          >
+            <ChevronLeft size={16} className="text-stone-600" />
+          </button>
+          <button
+            onClick={next}
+            className="w-9 h-9 rounded-full border border-stone-200 flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 transition-colors"
+          >
+            <ChevronRight size={16} className="text-stone-600" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function Home() {
   return (
     <div className="min-h-screen">
 
@@ -249,11 +345,11 @@ export function Home() {
                   className="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-rose-50 transition-colors text-center"
                 >
                   <motion.div
-                    whileHover={{ scale: 1.15, rotate: 6 }}
+                    whileHover={{ scale: 1.2, rotate: 8 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className={`w-12 h-12 sm:w-14 sm:h-14 ${occ.bg} rounded-2xl flex items-center justify-center`}
+                    className="text-3xl sm:text-4xl"
                   >
-                    <occ.icon size={24} className={occ.color} />
+                    {occ.emoji}
                   </motion.div>
                   <span className="text-xs sm:text-sm text-stone-600 group-hover:text-rose-600 transition-colors font-medium leading-tight">
                     {occ.label}
@@ -265,48 +361,32 @@ export function Home() {
         </div>
       </section>
 
-      {/* FLOWER IMAGE STRIP */}
-      <section className="py-12 bg-stone-50 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
-          <motion.p
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className="text-rose-600 text-sm tracking-wide uppercase font-medium mb-2"
-          >
-            Nuestra colección
-          </motion.p>
-          <motion.h2
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={1}
-            className="text-stone-800"
-            style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
-          >
-            Flores para cada momento
-          </motion.h2>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-2 px-4 sm:px-8 scrollbar-hide">
-          {flowerStrip.map((img, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+      {/* CAROUSEL — NUESTRA SELECCIÓN */}
+      <section className="py-16 bg-stone-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.4 }}
-              whileHover={{ scale: 1.04, y: -4 }}
-              className="shrink-0 w-48 h-56 rounded-2xl overflow-hidden shadow-md cursor-pointer"
+              variants={fadeUp}
+              className="text-rose-600 text-sm tracking-wide uppercase font-medium mb-2"
             >
-              <img
-                src={img}
-                alt={`Flor ${i + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-          ))}
+              Nuestra selección
+            </motion.p>
+            <motion.h2
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={1}
+              className="text-stone-800"
+              style={{ fontFamily: "Georgia, serif", fontSize: "2rem" }}
+            >
+              Flores para cada momento
+            </motion.h2>
+          </div>
+          <FlowerCarousel />
         </div>
       </section>
 
@@ -350,11 +430,11 @@ export function Home() {
                   className={`group block ${cat.bg} rounded-2xl p-8 border ${cat.border} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
                 >
                   <motion.div
-                    className={`w-14 h-14 ${cat.iconBg} rounded-2xl flex items-center justify-center mb-4`}
-                    whileHover={{ scale: 1.15, rotate: 8 }}
+                    className="text-5xl mb-4"
+                    whileHover={{ scale: 1.2, rotate: 10 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <cat.icon size={28} className={cat.text} />
+                    {cat.emoji}
                   </motion.div>
                   <h3 className="text-stone-800 mb-2">{cat.title}</h3>
                   <p className="text-stone-600 text-sm mb-4">{cat.description}</p>
@@ -459,7 +539,7 @@ export function Home() {
                 className="bg-stone-50 rounded-2xl p-5 border border-stone-100 hover:border-rose-200 hover:bg-rose-50/30 transition-colors"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <Truck size={15} className="text-rose-500 shrink-0" />
+                  <MapPin size={16} className="text-rose-500 shrink-0" />
                   <span className="text-stone-800 font-medium text-sm">{zone.zone}</span>
                 </div>
                 <div className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full mb-2">
@@ -478,7 +558,7 @@ export function Home() {
             className="mt-6 text-center"
           >
             <a
-              href="https://wa.me/593997620099?text=Hola! Quiero saber si hacen entregas en mi zona."
+              href="https://wa.me/593991234567?text=Hola! Quiero saber si hacen entregas en mi zona."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-rose-600 transition-colors"
@@ -590,7 +670,9 @@ export function Home() {
                   </div>
                   <div>
                     <p className="text-stone-800 text-sm font-medium">{t.name}</p>
-                    <p className="text-stone-400 text-xs">{t.location}</p>
+                    <p className="text-stone-400 text-xs flex items-center gap-1">
+                      <MapPin size={10} /> {t.location}
+                    </p>
                   </div>
                 </div>
               </motion.div>

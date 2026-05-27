@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router";
-import { useSupabaseProducts } from "../context/SupabaseContext";
+import { products } from "../data/products";
 import { useCart } from "../context/CartContext";
 import {
   ArrowLeft,
@@ -16,7 +16,6 @@ import { ProductCard } from "../components/ProductCard";
 export function ProductoDetalle() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products } = useSupabaseProducts();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [wished, setWished] = useState(false);

@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { useSupabaseProducts } from "../context/SupabaseContext";
+import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
-import { SlidersHorizontal, Gift, Truck, Flower2 } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+
+const detallesProducts = products.filter((p) => p.category === "detalles");
 
 const sortOptions = [
   { value: "default", label: "Relevancia" },
@@ -17,11 +19,8 @@ const heroBg =
   "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=1400&q=80";
 
 export function Detalles() {
-  const { products } = useSupabaseProducts();
   const [sort, setSort] = useState("default");
   const [occasion, setOccasion] = useState("Todos");
-
-  const detallesProducts = products.filter((p) => p.category === "detalles");
 
   const filteredProducts =
     occasion === "Todos"
@@ -164,9 +163,7 @@ export function Detalles() {
               animate={{ opacity: 1 }}
               className="text-center py-16 text-stone-400"
             >
-              <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Flower2 size={32} className="text-rose-400" />
-            </div>
+              <div className="text-5xl mb-4">🌸</div>
               <p className="text-lg">No hay detalles para "{occasion}" aún</p>
               <button
                 onClick={() => setOccasion("Todos")}
@@ -186,9 +183,7 @@ export function Detalles() {
             viewport={{ once: true }}
             className="bg-gradient-to-br from-rose-100 to-rose-50 rounded-2xl p-8 border border-rose-200"
           >
-            <div className="w-12 h-12 bg-rose-200 rounded-2xl flex items-center justify-center mb-3">
-              <Gift size={22} className="text-rose-600" />
-            </div>
+            <div className="text-3xl mb-3">🎁</div>
             <h3
               className="text-stone-800 mb-2"
               style={{ fontFamily: "Georgia, serif" }}
@@ -205,9 +200,7 @@ export function Detalles() {
             viewport={{ once: true }}
             className="bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl p-8 border border-emerald-200"
           >
-            <div className="w-12 h-12 bg-emerald-200 rounded-2xl flex items-center justify-center mb-3">
-              <Truck size={22} className="text-emerald-600" />
-            </div>
+            <div className="text-3xl mb-3">🚚</div>
             <h3
               className="text-stone-800 mb-2"
               style={{ fontFamily: "Georgia, serif" }}

@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { useSupabaseProducts } from "../context/SupabaseContext";
+import { products } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
-import { SlidersHorizontal, Flower2, Droplets, Thermometer, Scissors } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { motion } from "motion/react";
+
+const ramoProducts = products.filter((p) => p.category === "ramos");
 
 const sortOptions = [
   { value: "default", label: "Relevancia" },
@@ -15,10 +17,7 @@ const heroBg =
   "https://images.unsplash.com/photo-1490750967868-88df5691cc5c?auto=format&fit=crop&w=1400&q=80";
 
 export function Ramos() {
-  const { products } = useSupabaseProducts();
   const [sort, setSort] = useState("default");
-
-  const ramoProducts = products.filter((p) => p.category === "ramos");
 
   const sortedProducts = [...ramoProducts].sort((a, b) => {
     if (sort === "price-asc") return a.price - b.price;
@@ -41,9 +40,9 @@ export function Ramos() {
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4"
+            className="text-5xl mb-4"
           >
-            <Flower2 size={36} className="text-white" />
+            💐
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -114,22 +113,22 @@ export function Ramos() {
             className="text-stone-800 mb-6 text-center"
             style={{ fontFamily: "Georgia, serif" }}
           >
-            Tips para que tus flores duren más
+            Tips para que tus flores duren más 🌹
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                icon: Droplets,
+                icon: "💧",
                 title: "Agua fresca todos los días",
                 desc: "Cambia el agua cada día y corta los tallos en diagonal. Así absorben mejor.",
               },
               {
-                icon: Thermometer,
+                icon: "🌡️",
                 title: "Lugar fresco",
                 desc: "Ponlos en un lugar fresco y evita que les dé el sol directo. Les encanta el fresquito.",
               },
               {
-                icon: Scissors,
+                icon: "✂️",
                 title: "Corta al llegar",
                 desc: "Cuando recibas tu ramo, corta 2cm de cada tallo. Es como darles un refresh.",
               },
@@ -142,9 +141,7 @@ export function Ramos() {
                 transition={{ delay: i * 0.1 }}
                 className="flex gap-3"
               >
-                <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center shrink-0">
-                  <tip.icon size={18} className="text-rose-600" />
-                </div>
+                <span className="text-2xl">{tip.icon}</span>
                 <div>
                   <h4 className="text-stone-800 mb-1">{tip.title}</h4>
                   <p className="text-sm text-stone-600">{tip.desc}</p>

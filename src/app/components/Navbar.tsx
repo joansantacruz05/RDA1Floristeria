@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { ShoppingCart, Flower2, Menu, X, Phone } from "lucide-react";
+import { ShoppingCart, Flower2, Menu, X, Phone, User, LogIn } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
 
 export function Navbar() {
   const { itemCount } = useCart();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -24,7 +26,7 @@ export function Navbar() {
       <div className="bg-gradient-to-r from-rose-700 to-rose-600 text-white text-center py-2 text-sm">
         <span className="flex items-center justify-center gap-2">
           <Phone size={13} />
-          ¿Necesitas ayuda? Escríbenos al: +593 99 762 0099 · Quito, Ecuador
+          ¿Necesitas ayuda? Escríbenos al: +593 99 123 4567 · Quito, Ecuador
         </span>
       </div>
 
@@ -70,8 +72,30 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Cart + mobile menu */}
-          <div className="flex items-center gap-3">
+          {/* Auth + Cart + mobile menu */}
+          <div className="flex items-center gap-2">
+            {/* Auth button (desktop) */}
+            {user ? (
+              <Link
+                to="/cuenta"
+                className="hidden md:flex items-center gap-2 text-sm text-stone-600 hover:text-rose-600 transition-colors border border-stone-200 hover:border-rose-200 px-3 py-1.5 rounded-full"
+              >
+                <div className="w-6 h-6 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 text-xs font-bold">
+                  {user.name[0].toUpperCase()}
+                </div>
+                <span className="max-w-[90px] truncate">{user.name.split(" ")[0]}</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden md:flex items-center gap-1.5 text-sm text-stone-600 hover:text-rose-600 transition-colors border border-stone-200 hover:border-rose-200 px-3 py-1.5 rounded-full"
+              >
+                <LogIn size={14} />
+                Ingresar
+              </Link>
+            )}
+
+            {/* Cart */}
             <Link
               to="/carrito"
               className="relative p-2 rounded-full hover:bg-rose-50 transition-colors hover:scale-110 duration-200"
@@ -118,13 +142,44 @@ export function Navbar() {
                   key={link.to}
                   to={link.to}
                   onClick={() => setMenuOpen(false)}
-                  className={`block py-3 text-sm border-b border-rose-50 last:border-0 ${
+                  className={`block py-3 text-sm border-b border-rose-50 ${
                     isActive(link.to) ? "text-rose-600" : "text-stone-600"
                   }`}
                 >
                   {link.label}
                 </Link>
               ))}
+              <div className="pt-3 flex gap-3">
+                {user ? (
+                  <Link
+                    to="/cuenta"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-stone-600 border border-stone-200 rounded-xl"
+                  >
+                    <div className="w-5 h-5 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 text-xs font-bold">
+                      {user.name[0].toUpperCase()}
+                    </div>
+                    Mi cuenta
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex-1 text-center py-2 text-sm text-rose-600 border border-rose-200 rounded-xl"
+                    >
+                      Iniciar sesión
+                    </Link>
+                    <Link
+                      to="/registro"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex-1 text-center py-2 text-sm bg-rose-600 text-white rounded-xl"
+                    >
+                      Registrarse
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
