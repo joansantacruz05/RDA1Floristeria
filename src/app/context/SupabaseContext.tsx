@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import type { Product } from "@/app/data/products";
-import { fetchProducts } from "@/lib/supabase-service";
+import { obtenerProductos } from "@/lib/supabase-service";
 
 interface SupabaseContextValue {
   products: Product[];
@@ -20,7 +20,7 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProducts()
+    obtenerProductos()
       .then((data) => {
         setProducts(data);
         setLoading(false);

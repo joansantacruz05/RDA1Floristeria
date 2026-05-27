@@ -1,5 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
+import {
+  loginUsuario,
+  registrarUsuario as registrarUsuarioSupabase,
+  logoutUsuario,
+  obtenerPedidos,
+  guardarPedido,
+  guardarResena,
+  obtenerResenasPedido,
+} from "@/lib/supabase-service";
 
 export interface Review {
   id: string;
@@ -24,7 +33,7 @@ export interface Order {
   date: string;
   items: OrderItem[];
   total: number;
-  status: "pendiente" | "confirmado" | "entregado";
+  status: "pendiente" | "confirmado" | "en_camino" | "entregado" | "cancelado";
   reviews?: Review[];
 }
 
@@ -67,16 +76,13 @@ function getLocalUser(): User | null {
   }
 }
 
-async function getSupabaseUser(): Promise<User | null> {
-  if (!supabase) return null;
-  const { data } = await supabase.auth.getUser();
-  if (!data?.user) return null;
-  const meta = data.user.user_metadata;
+function mapSupabaseUser(user: any): User {
+  const meta = user.user_metadata || {};
   return {
-    id: data.user.id,
-    name: meta?.name || data.user.email?.split("@")[0] || "Usuario",
-    email: data.user.email || "",
-    phone: meta?.phone || "",
+    id: user.id,
+    name: meta.name || user.email?.split("@")[0] || "Usuario",
+    email: user.email || "",
+    phone: meta.phone || "",
   };
 }
 
@@ -107,39 +113,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const supabaseUser = await getSupabaseUser();
-      if (supabaseUser) {
-        setUser(supabaseUser);
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(supabaseUser));
+      if (supabase) {
+        const { data } = await supabase.auth.getUser();
+        if (data?.user) {
+          const mapped = mapSupabaseUser(data.user);
+          setUser(mapped);
+          localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(mapped));
+        } else {
+          const local = getLocalUser();
+          if (local) setUser(local);
+        }
       } else {
-        const localUser = getLocalUser();
-        if (localUser) setUser(localUser);
+        const local = getLocalUser();
+        if (local) setUser(local);
       }
     })();
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Try Supabase Auth first
     if (supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.toLowerCase().trim(),
-        password,
-      });
-      if (!error && data?.user) {
-        const meta = data.user.user_metadata;
-        const newUser: User = {
-          id: data.user.id,
-          name: meta?.name || data.user.email?.split("@")[0] || "Usuario",
-          email: data.user.email || "",
-          phone: meta?.phone || "",
-        };
-        setUser(newUser);
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
-        return true;
+      try {
+        const supabaseUser = await loginUsuario(email, password);
+        if (supabaseUser) {
+          const mapped = mapSupabaseUser(supabaseUser);
+          setUser(mapped);
+          localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(mapped));
+          return true;
+        }
+      } catch {
+        // Fallback a localStorage
       }
     }
 
-    // Fallback: localStorage
     const key = email.toLowerCase().trim();
     const users = getLocalUsers();
     const entry = users[key];
@@ -150,29 +155,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (name: string, email: string, password: string, phone?: string): Promise<boolean> => {
-    // Try Supabase Auth first
     if (supabase) {
-      const { data, error } = await supabase.auth.signUp({
-        email: email.toLowerCase().trim(),
-        password,
-        options: {
-          data: { name, phone },
-        },
-      });
-      if (!error && data?.user) {
-        const newUser: User = {
-          id: data.user.id,
-          name: name.trim(),
-          email: data.user.email || "",
-          phone,
-        };
-        setUser(newUser);
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
-        return true;
+      try {
+        const supabaseUser = await registrarUsuarioSupabase(name, email, password, phone);
+        if (supabaseUser) {
+          const mapped = mapSupabaseUser(supabaseUser);
+          setUser(mapped);
+          localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(mapped));
+          return true;
+        }
+      } catch {
+        // Fallback a localStorage
       }
     }
 
-    // Fallback: localStorage
     const key = email.toLowerCase().trim();
     const users = getLocalUsers();
     if (users[key]) return false;
@@ -185,9 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    if (supabase) {
-      await supabase.auth.signOut();
-    }
+    await logoutUsuario();
     setUser(null);
     localStorage.removeItem(CURRENT_USER_KEY);
   };
@@ -199,10 +193,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       date: new Date().toISOString(),
       status: "pendiente",
     };
-    setOrders((prev) => {
-      const updated = [newOrder, ...prev];
-      return updated;
-    });
+
+    // Guardar en Supabase si está configurado
+    if (supabase && user) {
+      guardarPedido(
+        user.id,
+        newOrder.id,
+        newOrder.total,
+        newOrder.items.map((i) => ({
+          producto_id: i.id,
+          nombre_producto: i.name,
+          cantidad: i.quantity,
+          precio_unitario: i.price,
+          imagen_url: i.image,
+        }))
+      ).catch((err) => console.error("Error al guardar pedido en Supabase:", err));
+    }
+
+    setOrders((prev) => [newOrder, ...prev]);
     return newOrder.id;
   };
 
@@ -212,6 +220,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       id: generateId(),
       date: new Date().toISOString(),
     };
+
+    if (supabase && user) {
+      guardarResena(
+        user.id,
+        reviewData.orderId,
+        reviewData.productId,
+        reviewData.productName,
+        reviewData.rating,
+        reviewData.comment
+      ).catch((err) => console.error("Error al guardar reseña en Supabase:", err));
+    }
+
     setReviews((prev) => [...prev, newReview]);
   };
 
@@ -225,7 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        orders: user ? orders.filter((o) => true) : [],
+        orders: user ? orders : [],
         reviews,
         login,
         register,
@@ -247,7 +267,7 @@ export function useAuth() {
   return ctx;
 }
 
-// --- localStorage helpers (fallback) ---
+// ── localStorage helpers (fallback) ──────────────────────────
 const USERS_KEY = "av_users";
 
 interface LocalUserEntry {

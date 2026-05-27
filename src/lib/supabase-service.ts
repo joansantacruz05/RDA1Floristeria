@@ -2,33 +2,35 @@ import { supabase } from "./supabase";
 import { products as localProducts } from "@/app/data/products";
 import type { Product } from "@/app/data/products";
 
-export async function fetchProducts(): Promise<Product[]> {
+// ── PRODUCTOS ────────────────────────────────────────────────
+
+export async function obtenerProductos(categoria?: "ramos" | "detalles"): Promise<Product[]> {
   if (!supabase) {
     console.warn("Supabase no configurado, usando productos locales");
     return localProducts;
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("productos")
-    .select("*")
+    .select("*, producto_tags(tag)")
     .eq("activo", true)
     .order("id");
 
+  if (categoria) query = query.eq("categoria", categoria);
+
+  const { data, error } = await query;
+
   if (error) {
-    console.error("Error al cargar productos de Supabase, usando locales:", error.message);
+    console.error("Error al cargar productos de Supabase:", error.message);
     return localProducts;
   }
 
-  if (!data || data.length === 0) {
-    return localProducts;
-  }
+  if (!data || data.length === 0) return localProducts;
 
   const localMap = new Map(localProducts.map((p) => [p.id, p]));
-  const localImages = [
-    ...new Set(localProducts.map((p) => p.image)),
-  ];
+  const localImages = [...new Set(localProducts.map((p) => p.image))];
 
-  return data.map((row) => ({
+  return data.map((row: any) => ({
     id: row.id,
     name: row.nombre,
     description: row.descripcion,
@@ -37,31 +39,96 @@ export async function fetchProducts(): Promise<Product[]> {
     category: row.categoria as Product["category"],
     badge: row.badge || undefined,
     rating: row.rating,
-    reviews: row.reviews,
-    tags: localMap.get(row.id)?.tags || [],
+    reviews: row.num_reseñas,
+    tags: row.producto_tags?.map((t: any) => t.tag) || localMap.get(row.id)?.tags || [],
   }));
 }
 
-export async function submitOrder(data: {
-  user_id?: string;
-  total: number;
-  items: { id: number; name: string; price: number; quantity: number }[];
-  notas?: string;
-  direccion_entrega?: string;
-}) {
-  if (!supabase) {
-    console.warn("Supabase no configurado, pedido no guardado");
-    return;
-  }
-  const { error } = await supabase.from("pedidos").insert({
-    user_id: data.user_id,
-    total: data.total,
-    items: JSON.stringify(data.items),
-    estado: "pendiente",
-    notas: data.notas,
-    direccion_entrega: data.direccion_entrega,
+// ── AUTH ──────────────────────────────────────────────────────
+
+export async function registrarUsuario(
+  nombre: string,
+  email: string,
+  password: string,
+  telefono?: string
+) {
+  if (!supabase) throw new Error("Supabase no configurado");
+  const { data, error } = await supabase.auth.signUp({
+    email: email.toLowerCase().trim(),
+    password,
+    options: { data: { name: nombre } },
   });
-  if (error) throw new Error(error.message);
+  if (error) throw error;
+  if (data.user && telefono) {
+    await supabase.from("clientes").update({ nombre, telefono }).eq("id", data.user.id);
+  }
+  return data.user;
+}
+
+export async function loginUsuario(email: string, password: string) {
+  if (!supabase) throw new Error("Supabase no configurado");
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.toLowerCase().trim(),
+    password,
+  });
+  if (error) throw error;
+  return data.user;
+}
+
+export async function logoutUsuario() {
+  if (supabase) await supabase.auth.signOut();
+}
+
+export async function obtenerSesion() {
+  if (!supabase) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session;
+}
+
+// ── PEDIDOS ───────────────────────────────────────────────────
+
+export async function guardarPedido(
+  clienteId: string,
+  idLocal: string,
+  total: number,
+  items: {
+    producto_id?: number;
+    nombre_producto: string;
+    cantidad: number;
+    precio_unitario: number;
+    imagen_url?: string;
+  }[]
+) {
+  if (!supabase) return null;
+
+  const { data: pedido, error: errorPedido } = await supabase
+    .from("pedidos")
+    .insert({ cliente_id: clienteId, id_local: idLocal, total, estado: "pendiente" })
+    .select()
+    .single();
+
+  if (errorPedido) throw errorPedido;
+
+  const itemsConPedido = items.map((item) => ({ ...item, pedido_id: pedido.id }));
+  const { error: errorItems } = await supabase.from("pedido_items").insert(itemsConPedido);
+  if (errorItems) throw errorItems;
+
+  return pedido;
+}
+
+export async function obtenerPedidos(clienteId: string) {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("pedidos")
+    .select("id, id_local, estado, total, creado_en, pedido_items(id, nombre_producto, cantidad, precio_unitario, imagen_url)")
+    .eq("cliente_id", clienteId)
+    .order("creado_en", { ascending: false });
+
+  if (error) {
+    console.error("Error al cargar pedidos:", error.message);
+    return [];
+  }
+  return data || [];
 }
 
 export async function submitSpecialOrder(data: {
@@ -75,51 +142,59 @@ export async function submitSpecialOrder(data: {
   colores?: string;
   descripcion: string;
 }) {
-  if (!supabase) {
-    console.warn("Supabase no configurado, pedido especial no guardado");
-    return;
-  }
+  if (!supabase) return;
   const { error } = await supabase.from("pedidos_especiales").insert({
     ...data,
-    estado: "pendiente",
+    estado: "recibido",
   });
-  if (error) throw new Error(error.message);
+  if (error) throw error;
 }
 
-export async function fetchUserOrders(userId: string) {
-  if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("pedidos")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  if (error) {
-    console.error("Error al cargar pedidos:", error.message);
-    return [];
-  }
-  return data || [];
-}
+// ── RESEÑAS ───────────────────────────────────────────────────
 
-export async function submitReview(review: {
-  user_id: string;
-  order_id: string;
-  product_id: number;
-  product_name: string;
-  rating: number;
-  comment: string;
-}) {
+export async function guardarResena(
+  clienteId: string,
+  pedidoIdLocal: string,
+  productoId: number,
+  nombreProducto: string,
+  calificacion: number,
+  comentario: string
+) {
   if (!supabase) return;
-  const { error } = await supabase.from("reviews").insert(review);
-  if (error) throw new Error(error.message);
+
+  const { data: pedido } = await supabase
+    .from("pedidos")
+    .select("id")
+    .eq("id_local", pedidoIdLocal)
+    .eq("cliente_id", clienteId)
+    .single();
+
+  const { data, error } = await supabase
+    .from("reseñas")
+    .insert({
+      cliente_id: clienteId,
+      pedido_id: pedido?.id ?? null,
+      id_local_pedido: pedidoIdLocal,
+      producto_id: productoId,
+      nombre_producto: nombreProducto,
+      calificacion,
+      comentario,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 }
 
-export async function fetchUserReviews(userId: string) {
+export async function obtenerResenasPedido(clienteId: string, pedidoIdLocal: string) {
   if (!supabase) return [];
   const { data, error } = await supabase
-    .from("reviews")
+    .from("reseñas")
     .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+    .eq("cliente_id", clienteId)
+    .eq("id_local_pedido", pedidoIdLocal);
+
   if (error) {
     console.error("Error al cargar reseñas:", error.message);
     return [];

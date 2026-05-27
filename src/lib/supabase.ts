@@ -15,3 +15,36 @@ if (!hasCredentials) {
 export const supabase = hasCredentials
   ? createClient(supabaseUrl!, supabaseAnonKey!)
   : null;
+
+// ── TIPOS ────────────────────────────────────────────────────
+
+export interface SupabaseUser {
+  id: string;
+  nombre: string;
+  email: string;
+  telefono?: string;
+}
+
+export interface SupabasePedido {
+  id: number;
+  id_local?: string;
+  estado: "pendiente" | "confirmado" | "en_camino" | "entregado" | "cancelado";
+  total: number;
+  creado_en: string;
+  pedido_items: {
+    id: number;
+    nombre_producto: string;
+    cantidad: number;
+    precio_unitario: number;
+    imagen_url?: string;
+  }[];
+}
+
+export interface SupabaseResena {
+  id: number;
+  producto_id: number;
+  nombre_producto: string;
+  calificacion: number;
+  comentario: string;
+  creado_en: string;
+}
