@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { ArrowRight, Truck, Shield, Clock, Gift, Sparkles, MapPin, Star, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
-import { products } from "../data/products";
+import { useSupabaseProducts } from "../context/SupabaseContext";
 import { img1, img2, img3, img4, img5, img6, img7, img8, img9, img10 } from "../data/localImages";
 import {
   pRosasRosadas, pGirasoles, pPrimaveral, pTulipanes, pPeonias,
@@ -11,7 +11,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect, useCallback } from "react";
 
 const heroImage = pRosasRosadas;
-const featuredProducts = products.slice(0, 4);
 const galleryGrid = [img1, img2, img3, img4, img5, img6];
 
 const carouselSlides = [
@@ -197,6 +196,9 @@ function FlowerCarousel() {
 }
 
 export function Home() {
+  const { products } = useSupabaseProducts();
+  const featuredProducts = products.slice(0, 4);
+
   return (
     <div className="min-h-screen">
 

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { supabase } from "@/lib/supabase";
 
 export interface Review {
   id: string;
@@ -49,7 +50,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const USERS_KEY = "av_users";
 const CURRENT_USER_KEY = "av_current_user";
 const ORDERS_KEY = "av_orders";
 const REVIEWS_KEY = "av_reviews";
@@ -58,24 +58,30 @@ function generateId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-function getUsers(): Record<string, { user: User; password: string }> {
+function getLocalUser(): User | null {
   try {
-    return JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
+    const stored = localStorage.getItem(CURRENT_USER_KEY);
+    return stored ? JSON.parse(stored) : null;
   } catch {
-    return {};
+    return null;
   }
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    try {
-      const stored = localStorage.getItem(CURRENT_USER_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+async function getSupabaseUser(): Promise<User | null> {
+  if (!supabase) return null;
+  const { data } = await supabase.auth.getUser();
+  if (!data?.user) return null;
+  const meta = data.user.user_metadata;
+  return {
+    id: data.user.id,
+    name: meta?.name || data.user.email?.split("@")[0] || "Usuario",
+    email: data.user.email || "",
+    phone: meta?.phone || "",
+  };
+}
 
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(ORDERS_KEY) || "[]");
@@ -83,7 +89,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return [];
     }
   });
-
   const [reviews, setReviews] = useState<Review[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(REVIEWS_KEY) || "[]");
@@ -100,9 +105,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews));
   }, [reviews]);
 
+  useEffect(() => {
+    (async () => {
+      const supabaseUser = await getSupabaseUser();
+      if (supabaseUser) {
+        setUser(supabaseUser);
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(supabaseUser));
+      } else {
+        const localUser = getLocalUser();
+        if (localUser) setUser(localUser);
+      }
+    })();
+  }, []);
+
   const login = async (email: string, password: string): Promise<boolean> => {
-    const users = getUsers();
+    // Try Supabase Auth first
+    if (supabase) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password,
+      });
+      if (!error && data?.user) {
+        const meta = data.user.user_metadata;
+        const newUser: User = {
+          id: data.user.id,
+          name: meta?.name || data.user.email?.split("@")[0] || "Usuario",
+          email: data.user.email || "",
+          phone: meta?.phone || "",
+        };
+        setUser(newUser);
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+        return true;
+      }
+    }
+
+    // Fallback: localStorage
     const key = email.toLowerCase().trim();
+    const users = getLocalUsers();
     const entry = users[key];
     if (!entry || entry.password !== password) return false;
     setUser(entry.user);
@@ -111,18 +150,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (name: string, email: string, password: string, phone?: string): Promise<boolean> => {
-    const users = getUsers();
+    // Try Supabase Auth first
+    if (supabase) {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase().trim(),
+        password,
+        options: {
+          data: { name, phone },
+        },
+      });
+      if (!error && data?.user) {
+        const newUser: User = {
+          id: data.user.id,
+          name: name.trim(),
+          email: data.user.email || "",
+          phone,
+        };
+        setUser(newUser);
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+        return true;
+      }
+    }
+
+    // Fallback: localStorage
     const key = email.toLowerCase().trim();
+    const users = getLocalUsers();
     if (users[key]) return false;
     const newUser: User = { id: generateId(), name: name.trim(), email: key, phone };
     users[key] = { user: newUser, password };
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    setLocalUsers(users);
     setUser(newUser);
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
     return true;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setUser(null);
     localStorage.removeItem(CURRENT_USER_KEY);
   };
@@ -180,4 +245,24 @@ export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
+}
+
+// --- localStorage helpers (fallback) ---
+const USERS_KEY = "av_users";
+
+interface LocalUserEntry {
+  user: User;
+  password: string;
+}
+
+function getLocalUsers(): Record<string, LocalUserEntry> {
+  try {
+    return JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function setLocalUsers(users: Record<string, LocalUserEntry>) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
