@@ -24,6 +24,8 @@ export interface Product {
   rating: number;
   reviews: number;
   tags: string[];
+  stock?: number;
+  stock_minimo?: number;
 }
 
 export const products: Product[] = [

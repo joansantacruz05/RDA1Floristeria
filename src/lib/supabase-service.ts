@@ -41,6 +41,8 @@ export async function obtenerProductos(categoria?: "ramos" | "detalles"): Promis
     rating: row.rating,
     reviews: row.num_reseñas,
     tags: row.producto_tags?.map((t: any) => t.tag) || localMap.get(row.id)?.tags || [],
+    stock: row.stock,
+    stock_minimo: row.stock_minimo,
   }));
 }
 
@@ -59,8 +61,14 @@ export async function registrarUsuario(
     options: { data: { name: nombre } },
   });
   if (error) throw error;
-  if (data.user && telefono) {
-    await supabase.from("clientes").update({ nombre, telefono }).eq("id", data.user.id);
+  if (data.user) {
+    const { error: insertError } = await supabase.from("clientes").insert({
+      id: data.user.id,
+      nombre: nombre.trim(),
+      email: data.user.email || email.toLowerCase().trim(),
+      telefono: telefono || null,
+    });
+    if (insertError && insertError.code !== "23505") throw insertError;
   }
   return data.user;
 }
@@ -77,6 +85,12 @@ export async function loginUsuario(email: string, password: string) {
 
 export async function logoutUsuario() {
   if (supabase) await supabase.auth.signOut();
+}
+
+export async function actualizarPassword(nuevaPassword: string) {
+  if (!supabase) throw new Error("Supabase no configurado");
+  const { error } = await supabase.auth.updateUser({ password: nuevaPassword });
+  if (error) throw error;
 }
 
 export async function obtenerSesion() {
@@ -112,6 +126,15 @@ export async function guardarPedido(
   const itemsConPedido = items.map((item) => ({ ...item, pedido_id: pedido.id }));
   const { error: errorItems } = await supabase.from("pedido_items").insert(itemsConPedido);
   if (errorItems) throw errorItems;
+
+  for (const item of items) {
+    if (item.producto_id) {
+      await supabase.rpc("decrementar_stock", {
+        pid: item.producto_id,
+        cantidad: item.cantidad,
+      });
+    }
+  }
 
   return pedido;
 }

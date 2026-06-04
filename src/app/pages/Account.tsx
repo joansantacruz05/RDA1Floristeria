@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { LogOut, Package, Star, ChevronDown, ChevronUp, Clock, CheckCircle, Truck } from "lucide-react";
+import { LogOut, Package, Star, ChevronDown, ChevronUp, Clock, CheckCircle, Truck, Shield, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth, Order, Review } from "../context/AuthContext";
+import { actualizarPassword } from "@/lib/supabase-service";
 
 const statusLabels: Record<Order["status"], { label: string; color: string; icon: React.ElementType }> = {
   pendiente: { label: "Pendiente de confirmación", color: "text-amber-600 bg-amber-50 border-amber-200", icon: Clock },
@@ -190,14 +191,45 @@ function OrderCard({ order }: { order: Order }) {
 export function Account() {
   const { user, orders, logout } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"pedidos" | "resenas">("pedidos");
+  const [tab, setTab] = useState<"pedidos" | "resenas" | "seguridad">("pedidos");
   const { reviews } = useAuth();
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordMsg, setPasswordMsg] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     if (!user) navigate("/login");
   }, [user, navigate]);
 
   if (!user) return null;
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordMsg("");
+    setPasswordError("");
+    if (newPassword.length < 6) {
+      setPasswordError("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Las contraseñas no coinciden.");
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      await actualizarPassword(newPassword);
+      setPasswordMsg("Contraseña actualizada correctamente.");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      setPasswordError(err.message || "Error al cambiar la contraseña.");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -234,6 +266,7 @@ export function Account() {
           {[
             { key: "pedidos", label: "Mis pedidos", icon: Package },
             { key: "resenas", label: "Mis reseñas", icon: Star },
+            { key: "seguridad", label: "Seguridad", icon: Shield },
           ].map((t) => (
             <button
               key={t.key}
@@ -270,6 +303,58 @@ export function Account() {
             ) : (
               orders.map((order) => <OrderCard key={order.id} order={order} />)
             )}
+          </div>
+        )}
+
+        {tab === "seguridad" && (
+          <div className="bg-white border border-stone-100 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-stone-800 font-medium mb-4">Cambiar contraseña</h2>
+            <form onSubmit={handleChangePassword} className="space-y-4 max-w-sm">
+              <div>
+                <label className="block text-sm text-stone-600 mb-1.5 font-medium">Nueva contraseña</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Mínimo 6 caracteres"
+                    required
+                    className="w-full border border-stone-200 rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus:border-rose-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                  >
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-stone-600 mb-1.5 font-medium">Confirmar contraseña</label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repite la contraseña"
+                  required
+                  className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400"
+                />
+              </div>
+              {passwordMsg && (
+                <p className="text-emerald-600 text-sm bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">{passwordMsg}</p>
+              )}
+              {passwordError && (
+                <p className="text-red-500 text-sm bg-red-50 border border-red-100 rounded-xl px-4 py-3">{passwordError}</p>
+              )}
+              <button
+                type="submit"
+                disabled={changingPassword}
+                className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-60"
+              >
+                {changingPassword ? "Actualizando..." : "Actualizar contraseña"}
+              </button>
+            </form>
           </div>
         )}
 
