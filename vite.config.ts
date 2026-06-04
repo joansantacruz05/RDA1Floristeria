@@ -16,7 +16,7 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
-  base: '/Flores_Ana_Victoria/',
+  base: '/RDA1Floristeria/',
   plugins: [
     figmaAssetResolver(),
     react(),
