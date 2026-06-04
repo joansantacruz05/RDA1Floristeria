@@ -148,7 +148,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const key = email.toLowerCase().trim();
     const users = getLocalUsers();
     const entry = users[key];
-    if (!entry || entry.password !== password) return false;
+    if (!entry) return false;
+    const passwordHash = await hashPassword(password);
+    if (entry.passwordHash !== passwordHash) return false;
     setUser(entry.user);
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(entry.user));
     return true;
@@ -173,7 +175,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const users = getLocalUsers();
     if (users[key]) return false;
     const newUser: User = { id: generateId(), name: name.trim(), email: key, phone };
-    users[key] = { user: newUser, password };
+    const passwordHash = await hashPassword(password);
+    users[key] = { user: newUser, passwordHash };
     setLocalUsers(users);
     setUser(newUser);
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
@@ -267,12 +270,22 @@ export function useAuth() {
   return ctx;
 }
 
+// ── Password hashing (fallback) ─────────────────────────────
+
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 // ── localStorage helpers (fallback) ──────────────────────────
 const USERS_KEY = "av_users";
 
 interface LocalUserEntry {
   user: User;
-  password: string;
+  passwordHash: string;
 }
 
 function getLocalUsers(): Record<string, LocalUserEntry> {
