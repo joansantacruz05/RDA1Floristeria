@@ -1,0 +1,36 @@
+name: Deploy a GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://xplawhyyvawtkegjkkhv.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwbGF3aHl5dmF3dGtlZ2pra2h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMjc4OTcsImV4cCI6MjA5NDgwMzg5N30.d2hIKn859K_Ry3cYW95y5VVsEqG8FsktAf68oRfCIl0
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
