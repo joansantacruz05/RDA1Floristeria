@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { Flower2, ArrowLeft, Mail, KeyRound, Eye, EyeOff, CheckCircle, User } from "lucide-react";
+import { Flower2, ArrowLeft, Mail, KeyRound, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { enviarCorreoRecuperacion, actualizarPassword } from "@/lib/supabase-service";
-import { supabase } from "@/lib/supabase";
 
 const USERS_KEY = "av_users";
 
@@ -135,30 +134,21 @@ export function RecuperarContrasena() {
           {mode === "email" && (
             <>
               <h1 className="text-stone-800 mb-1" style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}>
-                Recuperar contraseña
+                ¿Olvidaste tu contraseña?
               </h1>
-              <p className="text-stone-500 text-sm">Ingresa tu correo y te ayudaremos a recuperar tu cuenta</p>
+              <p className="text-stone-500 text-sm">Ingresa tu correo y te ayudamos a recuperar tu cuenta</p>
             </>
           )}
 
-          {mode === "local" && (
+          {(mode === "local" || mode === "nueva") && (
             <>
-              <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <User size={26} className="text-amber-500" />
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <KeyRound size={26} className="text-emerald-500" />
               </div>
               <h1 className="text-stone-800 mb-1" style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}>
-                Cuenta local encontrada
+                Crea una nueva contraseña
               </h1>
-              <p className="text-stone-500 text-sm">Escribe tu nueva contraseña para {email}</p>
-            </>
-          )}
-
-          {mode === "nueva" && (
-            <>
-              <h1 className="text-stone-800 mb-1" style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}>
-                Nueva contraseña
-              </h1>
-              <p className="text-stone-500 text-sm">Escribe tu nueva contraseña</p>
+              <p className="text-stone-500 text-sm">Cuenta verificada. Escribe tu nueva contraseña</p>
             </>
           )}
 
@@ -168,12 +158,12 @@ export function RecuperarContrasena() {
                 <CheckCircle size={34} className="text-emerald-500" />
               </div>
               <h1 className="text-stone-800 mb-2" style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}>
-                {password ? "Contraseña actualizada" : "Correo enviado"}
+                {password ? "¡Contraseña actualizada!" : "Revisa tu correo"}
               </h1>
               <p className="text-stone-500 text-sm">
                 {password
-                  ? "Tu contraseña se actualizó correctamente. Ya puedes iniciar sesión."
-                  : "Si el correo existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña."}
+                  ? "Tu contraseña se cambió correctamente. Ya puedes iniciar sesión."
+                  : "Te enviamos un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada."}
               </p>
             </>
           )}
