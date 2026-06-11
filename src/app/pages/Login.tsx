@@ -79,6 +79,15 @@ export function Login() {
             </div>
           </div>
 
+          <div className="text-right -mt-1">
+            <Link
+              to="/recuperar"
+              className="text-xs text-rose-500 hover:text-rose-600 transition-colors font-medium"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+
           {error && (
             <motion.p
               initial={{ opacity: 0, y: -6 }}

@@ -11,6 +11,7 @@ import { ProductoDetalle } from "./pages/ProductoDetalle";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Account } from "./pages/Account";
+import { RecuperarContrasena } from "./pages/RecuperarContrasena";
 
 function Root() {
   return (
@@ -52,6 +53,7 @@ export const router = createHashRouter([
       { path: "producto/:id", Component: ProductoDetalle },
       { path: "login", Component: Login },
       { path: "registro", Component: Register },
+      { path: "recuperar", Component: RecuperarContrasena },
       { path: "cuenta", Component: Account },
       { path: "*", Component: NotFound },
     ],
