@@ -1,12 +1,35 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { Flower2, ArrowLeft, Mail, KeyRound, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Flower2, ArrowLeft, Mail, KeyRound, Eye, EyeOff, CheckCircle, User } from "lucide-react";
 import { motion } from "motion/react";
 import { enviarCorreoRecuperacion, actualizarPassword } from "@/lib/supabase-service";
+import { supabase } from "@/lib/supabase";
+
+const USERS_KEY = "av_users";
+
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function getLocalUsers(): Record<string, any> {
+  try {
+    return JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function setLocalUsers(users: Record<string, any>) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
 
 export function RecuperarContrasena() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"email" | "nueva" | "enviado">("email");
+  const [mode, setMode] = useState<"email" | "nueva" | "enviado" | "local">("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -16,7 +39,7 @@ export function RecuperarContrasena() {
 
   useEffect(() => {
     const saved = sessionStorage.getItem("av_recovery_hash");
-    if (saved && saved.includes("access_token") && saved.includes("type=recovery")) {
+    if (saved && (saved === "true" || (saved.includes("access_token") && saved.includes("type=recovery")))) {
       setMode("nueva");
     }
   }, []);
@@ -24,18 +47,56 @@ export function RecuperarContrasena() {
   const handleEnviarCorreo = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const cleanEmail = email.toLowerCase().trim();
+
+    const localUsers = getLocalUsers();
+    if (localUsers[cleanEmail]) {
+      sessionStorage.setItem("av_reset_email", cleanEmail);
+      setMode("local");
+      return;
+    }
+
     setLoading(true);
     try {
-      await enviarCorreoRecuperacion(email);
+      await enviarCorreoRecuperacion(cleanEmail);
       setMode("enviado");
-    } catch (err: any) {
-      setError(err.message || "Error al enviar el correo. Intenta de nuevo.");
+    } catch {
+      setMode("enviado");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCambiarPassword = async (e: React.FormEvent) => {
+  const handleCambiarPasswordLocal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+    if (password !== confirm) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+    const resetEmail = sessionStorage.getItem("av_reset_email");
+    if (!resetEmail) {
+      setError("No se encontró la cuenta. Vuelve a intentarlo.");
+      return;
+    }
+    const users = getLocalUsers();
+    if (!users[resetEmail]) {
+      setError("La cuenta ya no existe. Regístrate de nuevo.");
+      return;
+    }
+    const newHash = await hashPassword(password);
+    users[resetEmail].passwordHash = newHash;
+    setLocalUsers(users);
+    sessionStorage.removeItem("av_reset_email");
+    setMode("enviado");
+  };
+
+  const handleCambiarPasswordSupabase = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (password.length < 6) {
@@ -49,6 +110,7 @@ export function RecuperarContrasena() {
     setLoading(true);
     try {
       await actualizarPassword(password);
+      sessionStorage.removeItem("av_recovery_hash");
       setMode("enviado");
     } catch (err: any) {
       setError(err.message || "Error al actualizar la contraseña.");
@@ -75,7 +137,19 @@ export function RecuperarContrasena() {
               <h1 className="text-stone-800 mb-1" style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}>
                 Recuperar contraseña
               </h1>
-              <p className="text-stone-500 text-sm">Te enviaremos un enlace para restablecer tu contraseña</p>
+              <p className="text-stone-500 text-sm">Ingresa tu correo y te ayudaremos a recuperar tu cuenta</p>
+            </>
+          )}
+
+          {mode === "local" && (
+            <>
+              <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <User size={26} className="text-amber-500" />
+              </div>
+              <h1 className="text-stone-800 mb-1" style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}>
+                Cuenta local encontrada
+              </h1>
+              <p className="text-stone-500 text-sm">Escribe tu nueva contraseña para {email}</p>
             </>
           )}
 
@@ -94,12 +168,12 @@ export function RecuperarContrasena() {
                 <CheckCircle size={34} className="text-emerald-500" />
               </div>
               <h1 className="text-stone-800 mb-2" style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}>
-                ¡Listo!
+                {password ? "Contraseña actualizada" : "Correo enviado"}
               </h1>
               <p className="text-stone-500 text-sm">
                 {password
-                  ? "Tu contraseña se actualizó correctamente."
-                  : "Revisa tu correo electrónico y sigue el enlace para restablecer tu contraseña."}
+                  ? "Tu contraseña se actualizó correctamente. Ya puedes iniciar sesión."
+                  : "Si el correo existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña."}
               </p>
             </>
           )}
@@ -137,13 +211,13 @@ export function RecuperarContrasena() {
               disabled={loading}
               className="w-full bg-rose-600 hover:bg-rose-700 text-white py-3.5 rounded-xl transition-all text-sm font-medium shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
-              {loading ? "Enviando..." : "Enviar enlace de recuperación"}
+              {loading ? "Verificando..." : "Recuperar contraseña"}
             </button>
           </form>
         )}
 
-        {mode === "nueva" && (
-          <form onSubmit={handleCambiarPassword} className="space-y-4">
+        {(mode === "local" || mode === "nueva") && (
+          <form onSubmit={mode === "local" ? handleCambiarPasswordLocal : handleCambiarPasswordSupabase} className="space-y-4">
             <div>
               <label className="block text-sm text-stone-600 mb-1.5 font-medium">Nueva contraseña</label>
               <div className="relative">
