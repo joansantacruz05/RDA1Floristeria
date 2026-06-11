@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router";
 import { Flower2, ArrowLeft, Mail, KeyRound, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { enviarCorreoRecuperacion, actualizarPassword } from "@/lib/supabase-service";
-import { supabase } from "@/lib/supabase";
 
 export function RecuperarContrasena() {
   const navigate = useNavigate();
@@ -16,8 +15,8 @@ export function RecuperarContrasena() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.includes("access_token") && hash.includes("type=recovery")) {
+    const saved = sessionStorage.getItem("av_recovery_hash");
+    if (saved && saved.includes("access_token") && saved.includes("type=recovery")) {
       setMode("nueva");
     }
   }, []);
@@ -27,8 +26,8 @@ export function RecuperarContrasena() {
     setError("");
     setLoading(true);
     try {
-      const redirectTo = `${window.location.origin}${window.location.pathname}#/recuperar`;
-      await enviarCorreoRecuperacion(email, redirectTo);
+      const base = `${window.location.origin}${window.location.pathname}`;
+      await enviarCorreoRecuperacion(email, base);
       setMode("enviado");
     } catch (err: any) {
       setError(err.message || "Error al enviar el correo. Intenta de nuevo.");

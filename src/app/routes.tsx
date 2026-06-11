@@ -1,4 +1,5 @@
-import { createHashRouter, Outlet } from "react-router";
+import { createHashRouter, Outlet, useNavigate } from "react-router";
+import { useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { WhatsAppButton } from "./components/WhatsAppButton";
@@ -27,6 +28,16 @@ function Root() {
 }
 
 function NotFound() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes("type=recovery") && hash.includes("access_token=")) {
+      sessionStorage.setItem("av_recovery_hash", hash);
+      navigate("/recuperar", { replace: true });
+    }
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex items-center justify-center flex-col gap-4">
       <div className="text-6xl">🌸</div>
