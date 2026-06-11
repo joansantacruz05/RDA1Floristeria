@@ -93,9 +93,9 @@ export async function actualizarPassword(nuevaPassword: string) {
   if (error) throw error;
 }
 
-export async function enviarCorreoRecuperacion(email: string, redirectTo: string) {
+export async function enviarCorreoRecuperacion(email: string) {
   if (!supabase) throw new Error("Supabase no configurado");
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
   if (error) throw error;
 }
 

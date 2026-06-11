@@ -26,8 +26,7 @@ export function RecuperarContrasena() {
     setError("");
     setLoading(true);
     try {
-      const base = `${window.location.origin}${window.location.pathname}`;
-      await enviarCorreoRecuperacion(email, base);
+      await enviarCorreoRecuperacion(email);
       setMode("enviado");
     } catch (err: any) {
       setError(err.message || "Error al enviar el correo. Intenta de nuevo.");

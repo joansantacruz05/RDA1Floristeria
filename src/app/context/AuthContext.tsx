@@ -130,6 +130,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
+  useEffect(() => {
+    if (!supabase) return;
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        sessionStorage.setItem("av_recovery_hash", "true");
+      }
+    });
+    return () => listener?.subscription.unsubscribe();
+  }, []);
+
   const login = async (email: string, password: string): Promise<boolean> => {
     if (supabase) {
       try {
