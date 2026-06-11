@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -31,6 +31,7 @@ export function Carrito() {
   const { items, removeFromCart, updateQuantity, clearCart, total, itemCount } =
     useCart();
   const { user, saveOrder } = useAuth();
+  const navigate = useNavigate();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -336,18 +337,21 @@ export function Carrito() {
 
               <button
                 onClick={() => {
-                  if (user) {
-                    saveOrder({
-                      items: items.map((item) => ({
-                        id: item.id,
-                        name: item.name,
-                        price: item.price,
-                        quantity: item.quantity,
-                        image: item.image,
-                      })),
-                      total: finalTotal,
-                    });
+                  if (!user) {
+                    navigate("/login");
+                    return;
                   }
+                  saveOrder({
+                    items: items.map((item) => ({
+                      id: item.id,
+                      name: item.name,
+                      price: item.price,
+                      quantity: item.quantity,
+                      image: item.image,
+                    })),
+                    total: finalTotal,
+                  });
+                  clearCart();
                   setOrderPlaced(true);
                 }}
                 className="w-full mt-5 bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-all text-sm font-medium hover:-translate-y-0.5 hover:shadow-lg shadow-md"

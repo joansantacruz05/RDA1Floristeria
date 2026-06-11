@@ -9,9 +9,13 @@ import {
   Truck,
   Shield,
   ChevronRight,
+  User,
+  MessageSquare,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProductCard } from "../components/ProductCard";
+import { obtenerResenasProducto } from "@/lib/supabase-service";
+import type { ResenaPublica } from "@/lib/supabase-service";
 
 export function ProductoDetalle() {
   const { id } = useParams();
@@ -20,6 +24,17 @@ export function ProductoDetalle() {
   const [quantity, setQuantity] = useState(1);
   const [wished, setWished] = useState(false);
   const [added, setAdded] = useState(false);
+  const [resenas, setResenas] = useState<ResenaPublica[]>([]);
+  const [cargandoResenas, setCargandoResenas] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setCargandoResenas(true);
+      const data = await obtenerResenasProducto(product.id);
+      setResenas(data);
+      setCargandoResenas(false);
+    })();
+  }, [product.id]);
 
   const product = products.find((p) => p.id === Number(id));
   const related = products
@@ -248,6 +263,62 @@ export function ProductoDetalle() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Reseñas de clientes */}
+        <div className="mt-20">
+          <h2
+            className="text-stone-800 mb-8"
+            style={{ fontFamily: "Georgia, serif", fontSize: "1.8rem" }}
+          >
+            Reseñas de clientes
+          </h2>
+
+          {cargandoResenas ? (
+            <div className="text-center py-12">
+              <div className="animate-spin w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full mx-auto mb-3" />
+              <p className="text-stone-400 text-sm">Cargando reseñas...</p>
+            </div>
+          ) : resenas.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-2xl border border-stone-100">
+              <MessageSquare size={40} className="text-stone-300 mx-auto mb-3" />
+              <p className="text-stone-600 mb-1" style={{ fontFamily: "Georgia, serif", fontSize: "1.1rem" }}>
+                Aún no hay reseñas
+              </p>
+              <p className="text-stone-400 text-sm">Sé el primero en dejar tu opinión después de recibir tu pedido</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {resenas.map((r) => (
+                <div key={r.id} className="bg-white border border-stone-100 rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-rose-100 rounded-full flex items-center justify-center shrink-0">
+                        <User size={15} className="text-rose-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-stone-700">{r.cliente_nombre}</p>
+                        <p className="text-xs text-stone-400">
+                          {new Date(r.creado_en).toLocaleDateString("es-EC", { day: "numeric", month: "long", year: "numeric" })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          size={14}
+                          fill={s <= r.calificacion ? "#f43f5e" : "none"}
+                          className={s <= r.calificacion ? "text-rose-500" : "text-stone-200"}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-sm text-stone-600 leading-relaxed">"{r.comentario}"</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Related */}

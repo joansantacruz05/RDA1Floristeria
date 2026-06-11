@@ -16,7 +16,7 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
-  base: '/RDA1Floristeria/',
+  base: process.env.VITE_BASE_URL || '/RDA1Floristeria/',
   plugins: [
     figmaAssetResolver(),
     react(),

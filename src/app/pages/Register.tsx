@@ -19,16 +19,40 @@ export function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (password !== confirm) {
+
+    // Sanitizar entradas (anti-XSS / SQL injection)
+    const sanitize = (str: string) => str.replace(/<[^>]*>/g, "").trim();
+    const cleanName = sanitize(name);
+    const cleanEmail = sanitize(email).toLowerCase();
+    const cleanPassword = sanitize(password);
+    const cleanConfirm = sanitize(confirm);
+    const cleanPhone = sanitize(phone);
+
+    if (!cleanName) {
+      setError("El nombre es obligatorio.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setError("Ingresa un correo electrónico válido.");
+      return;
+    }
+    if (cleanPassword !== cleanConfirm) {
       setError("Las contraseñas no coinciden.");
       return;
     }
-    if (password.length < 6) {
+    if (cleanPassword.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
+    if (cleanPhone) {
+      const phoneDigits = cleanPhone.replace(/\D/g, "");
+      if (phoneDigits.length > 10) {
+        setError("El teléfono debe tener máximo 10 dígitos.");
+        return;
+      }
+    }
     setLoading(true);
-    const ok = await register(name, email, password, phone);
+    const ok = await register(cleanName, cleanEmail, cleanPassword, cleanPhone);
     setLoading(false);
     if (ok) {
       navigate("/cuenta");

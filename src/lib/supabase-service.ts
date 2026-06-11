@@ -173,6 +173,16 @@ export async function submitSpecialOrder(data: {
   if (error) throw error;
 }
 
+export interface ResenaPublica {
+  id: number;
+  cliente_id: string;
+  nombre_producto: string;
+  calificacion: number;
+  comentario: string;
+  creado_en: string;
+  cliente_nombre: string;
+}
+
 // ── RESEÑAS ───────────────────────────────────────────────────
 
 export async function guardarResena(
@@ -223,4 +233,27 @@ export async function obtenerResenasPedido(clienteId: string, pedidoIdLocal: str
     return [];
   }
   return data || [];
+}
+
+export async function obtenerResenasProducto(productoId: number): Promise<ResenaPublica[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("reseñas")
+    .select("id, cliente_id, nombre_producto, calificacion, comentario, creado_en, clientes(nombre)")
+    .eq("producto_id", productoId)
+    .order("creado_en", { ascending: false });
+
+  if (error) {
+    console.error("Error al cargar reseñas del producto:", error.message);
+    return [];
+  }
+  return (data || []).map((r: any) => ({
+    id: r.id,
+    cliente_id: r.cliente_id,
+    nombre_producto: r.nombre_producto,
+    calificacion: r.calificacion,
+    comentario: r.comentario,
+    creado_en: r.creado_en,
+    cliente_nombre: r.clientes?.nombre || "Usuario",
+  }));
 }
