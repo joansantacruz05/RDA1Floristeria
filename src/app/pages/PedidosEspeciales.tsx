@@ -8,6 +8,7 @@ import {
   Star,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { submitSpecialOrder } from "@/lib/supabase-service";
 
 const heroBg =
   "https://images.unsplash.com/photo-1508610048659-a06b669e3321?auto=format&fit=crop&w=1400&q=80";
@@ -59,6 +60,8 @@ const testimonials = [
 
 export function PedidosEspeciales() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     nombre: "",
     email: "",
@@ -80,9 +83,29 @@ export function PedidosEspeciales() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError("");
+    setSubmitting(true);
+    try {
+      await submitSpecialOrder({
+        nombre_contacto: form.nombre,
+        email_contacto: form.email,
+        telefono_contacto: form.telefono,
+        ocasion: form.ocasion,
+        fecha_evento: form.fecha,
+        presupuesto: form.presupuesto,
+        flores_preferidas: form.flores.length > 0 ? form.flores : undefined,
+        colores: form.colorPreferido || undefined,
+        descripcion: form.descripcion,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Error al guardar pedido especial:", err);
+      setError("Ocurrió un error al enviar tu pedido. Intenta de nuevo.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -373,11 +396,17 @@ export function PedidosEspeciales() {
                 />
               </div>
 
+              {error && (
+                <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3 border border-red-100">
+                  {error}
+                </div>
+              )}
               <button
                 type="submit"
-                className="w-full bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-all text-sm font-medium shadow-md hover:-translate-y-0.5 hover:shadow-lg"
+                disabled={submitting}
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white py-4 rounded-xl transition-all text-sm font-medium shadow-md hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
-                Enviar mi pedido especial ✨
+                {submitting ? "Enviando..." : "Enviar mi pedido especial ✨"}
               </button>
 
               <p className="text-center text-xs text-stone-500">
