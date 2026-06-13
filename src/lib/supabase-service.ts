@@ -181,7 +181,7 @@ export async function submitSpecialOrder(data: {
 
 export interface ResenaPublica {
   id: number;
-  cliente_id: string;
+  cliente_id: string | null;
   nombre_producto: string;
   calificacion: number;
   comentario: string;
@@ -197,7 +197,8 @@ export async function guardarResena(
   productoId: number,
   nombreProducto: string,
   calificacion: number,
-  comentario: string
+  comentario: string,
+  nombreCliente?: string
 ) {
   if (!supabase) return;
 
@@ -206,21 +207,37 @@ export async function guardarResena(
     .select("id")
     .eq("id_local", pedidoIdLocal)
     .eq("cliente_id", clienteId)
-    .single();
+    .maybeSingle();
+
+  const row = {
+    cliente_id: clienteId,
+    pedido_id: pedido?.id ?? null,
+    id_local_pedido: pedidoIdLocal,
+    producto_id: productoId,
+    nombre_producto: nombreProducto,
+    nombre_cliente: nombreCliente ?? null,
+    calificacion,
+    comentario,
+  };
 
   const { data, error } = await supabase
     .from("reseñas")
-    .insert({
-      cliente_id: clienteId,
-      pedido_id: pedido?.id ?? null,
-      id_local_pedido: pedidoIdLocal,
-      producto_id: productoId,
-      nombre_producto: nombreProducto,
-      calificacion,
-      comentario,
-    })
+    .insert(row)
     .select()
     .single();
+
+  if (error?.code === "23503") {
+    row.cliente_id = null;
+    row.pedido_id = null;
+    const { data: retry, error: retryError } = await supabase
+      .from("reseñas")
+      .insert(row)
+      .select()
+      .single();
+
+    if (retryError) throw retryError;
+    return retry;
+  }
 
   if (error) throw error;
   return data;
@@ -260,6 +277,6 @@ export async function obtenerResenasProducto(productoId: number): Promise<Resena
     calificacion: r.calificacion,
     comentario: r.comentario,
     creado_en: r.creado_en,
-    cliente_nombre: r.clientes?.nombre || "Usuario",
+    cliente_nombre: r.clientes?.nombre || r.nombre_cliente || "Usuario",
   }));
 }

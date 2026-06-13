@@ -111,6 +111,7 @@ CREATE TABLE reseñas (
   id_local_pedido TEXT,
   producto_id     INTEGER REFERENCES productos(id) ON DELETE SET NULL,
   nombre_producto TEXT    NOT NULL,
+  nombre_cliente  TEXT,
   calificacion    INTEGER NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
   comentario      TEXT    NOT NULL CHECK (length(comentario) >= 10),
   creado_en       TIMESTAMPTZ DEFAULT NOW()
