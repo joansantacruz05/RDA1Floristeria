@@ -242,7 +242,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         reviewData.productName,
         reviewData.rating,
         reviewData.comment,
-        user.name
+        user.name,
+        user.email
       ).catch((err) => console.error("Error al guardar reseña en Supabase:", err));
     }
 

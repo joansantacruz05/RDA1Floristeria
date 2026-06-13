@@ -198,9 +198,16 @@ export async function guardarResena(
   nombreProducto: string,
   calificacion: number,
   comentario: string,
-  nombreCliente?: string
+  nombreCliente?: string,
+  emailCliente?: string
 ) {
   if (!supabase) return;
+
+  await supabase.from("clientes").upsert({
+    id: clienteId,
+    nombre: nombreCliente ?? "Usuario",
+    email: emailCliente ?? "",
+  }, { onConflict: "id" });
 
   const { data: pedido } = await supabase
     .from("pedidos")
@@ -209,35 +216,19 @@ export async function guardarResena(
     .eq("cliente_id", clienteId)
     .maybeSingle();
 
-  const row = {
-    cliente_id: clienteId,
-    pedido_id: pedido?.id ?? null,
-    id_local_pedido: pedidoIdLocal,
-    producto_id: productoId,
-    nombre_producto: nombreProducto,
-    nombre_cliente: nombreCliente ?? null,
-    calificacion,
-    comentario,
-  };
-
   const { data, error } = await supabase
     .from("reseñas")
-    .insert(row)
+    .insert({
+      cliente_id: clienteId,
+      pedido_id: pedido?.id ?? null,
+      id_local_pedido: pedidoIdLocal,
+      producto_id: productoId,
+      nombre_producto: nombreProducto,
+      calificacion,
+      comentario,
+    })
     .select()
     .single();
-
-  if (error?.code === "23503") {
-    row.cliente_id = null;
-    row.pedido_id = null;
-    const { data: retry, error: retryError } = await supabase
-      .from("reseñas")
-      .insert(row)
-      .select()
-      .single();
-
-    if (retryError) throw retryError;
-    return retry;
-  }
 
   if (error) throw error;
   return data;
@@ -277,6 +268,6 @@ export async function obtenerResenasProducto(productoId: number): Promise<Resena
     calificacion: r.calificacion,
     comentario: r.comentario,
     creado_en: r.creado_en,
-    cliente_nombre: r.clientes?.nombre || r.nombre_cliente || "Usuario",
+    cliente_nombre: r.clientes?.nombre || "Usuario",
   }));
 }

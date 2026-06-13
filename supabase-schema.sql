@@ -16,9 +16,9 @@ DROP TABLE IF EXISTS clientes         CASCADE;
 
 -- ─── 1. CLIENTES (vinculado a Supabase Auth) ─────────────────
 CREATE TABLE clientes (
-  id          UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  id          UUID PRIMARY KEY,
   nombre      TEXT NOT NULL,
-  email       TEXT NOT NULL,
+  email       TEXT NOT NULL DEFAULT '',
   telefono    TEXT,
   creado_en   TIMESTAMPTZ DEFAULT NOW(),
   actualizado_en TIMESTAMPTZ DEFAULT NOW()
@@ -159,9 +159,13 @@ CREATE POLICY "reseñas_insertar_autenticado"
   ON reseñas FOR INSERT
   WITH CHECK (auth.uid() = cliente_id);
 
+CREATE POLICY "clientes_insertar_publico"
+  ON clientes FOR INSERT
+  WITH CHECK (TRUE);
+
 CREATE POLICY "clientes_propio_perfil"
-  ON clientes FOR ALL
-  USING (auth.uid() = id);
+  ON clientes FOR SELECT
+  USING (auth.uid() = id OR auth.uid() IS NULL);
 
 CREATE POLICY "pedidos_propios"
   ON pedidos FOR ALL
