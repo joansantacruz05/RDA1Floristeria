@@ -28,14 +28,4 @@ export default defineConfig({
     },
   },
   assetsInclude: ['**/*.svg', '**/*.csv'],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('react-router')) return 'vendor-router';
-          if (id.includes('node_modules')) return 'vendor';
-        },
-      },
-    },
-  },
 })
