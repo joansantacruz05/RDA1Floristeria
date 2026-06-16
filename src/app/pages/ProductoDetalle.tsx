@@ -27,19 +27,20 @@ export function ProductoDetalle() {
   const [resenas, setResenas] = useState<ResenaPublica[]>([]);
   const [cargandoResenas, setCargandoResenas] = useState(true);
 
+  const product = products.find((p) => p.id === Number(id));
+  const related = products
+    .filter((p) => p.category === product?.category && p.id !== product?.id)
+    .slice(0, 3);
+
   useEffect(() => {
+    if (!product) return;
     (async () => {
       setCargandoResenas(true);
       const data = await obtenerResenasProducto(product.id);
       setResenas(data);
       setCargandoResenas(false);
     })();
-  }, [product.id]);
-
-  const product = products.find((p) => p.id === Number(id));
-  const related = products
-    .filter((p) => p.category === product?.category && p.id !== product?.id)
-    .slice(0, 3);
+  }, [product?.id]);
 
   if (!product) {
     return (
