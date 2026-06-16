@@ -11,7 +11,7 @@ import {
   MessageCircle,
   LogIn,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 const FREE_SHIPPING_THRESHOLD = 40;
@@ -34,7 +34,7 @@ export function Carrito() {
   const navigate = useNavigate();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
-  const [confirmedTotal, setConfirmedTotal] = useState(0);
+  const confirmedTotal = useRef(0);
 
   const iva = Math.round(total * IVA_RATE * 100) / 100;
   const shipping = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
@@ -47,7 +47,7 @@ export function Carrito() {
   };
 
   const whatsappText = encodeURIComponent(
-    `Hola AnaVictoria! Acabo de realizar una transferencia por $${confirmedTotal.toFixed(2)} USD para mi pedido. Te envío el comprobante. 🌹`
+    `Hola AnaVictoria! Acabo de realizar una transferencia por $${confirmedTotal.current.toFixed(2)} USD para mi pedido. Te envío el comprobante. 🌹`
   );
 
   if (orderPlaced) {
@@ -75,7 +75,7 @@ export function Carrito() {
           </h2>
           <p className="text-stone-500 text-sm text-center mb-6">
             Para confirmar tu pedido realiza la transferencia por{" "}
-            <strong className="text-rose-600">${confirmedTotal.toFixed(2)} USD</strong>{" "}
+            <strong className="text-rose-600">${confirmedTotal.current.toFixed(2)} USD</strong>{" "}
             a la siguiente cuenta y envíanos el comprobante por WhatsApp.
           </p>
 
@@ -93,7 +93,7 @@ export function Carrito() {
               { label: "Número de cuenta", value: BANK_INFO.numero, copyable: true },
               { label: "Titular", value: BANK_INFO.titular },
               { label: "RUC", value: BANK_INFO.ci, copyable: true },
-              { label: "Monto exacto", value: `$${confirmedTotal.toFixed(2)} USD`, highlight: true },
+              { label: "Monto exacto", value: `$${confirmedTotal.current.toFixed(2)} USD`, highlight: true },
             ].map((row) => (
               <div key={row.label} className="flex items-center justify-between text-sm">
                 <span className="text-stone-500 w-36 shrink-0">{row.label}</span>
@@ -342,7 +342,7 @@ export function Carrito() {
                     navigate("/login");
                     return;
                   }
-                  setConfirmedTotal(finalTotal);
+                  confirmedTotal.current = finalTotal;
                   saveOrder({
                     items: items.map((item) => ({
                       id: item.id,
